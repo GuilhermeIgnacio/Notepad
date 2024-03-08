@@ -10,16 +10,21 @@ import kotlinx.coroutines.launch
 data class NoteState(
     val noteTitle: String = "",
     val noteBody: String = "",
+    val noteCategory: String = "",
     val lastChange: String = "",
-    val isNoteSheetOpen: Boolean = false
+    val isNoteSheetOpen: Boolean = false,
+    val isCategoryDialogOpen: Boolean = false
 
 )
 
 sealed interface NoteEvents {
     data class OnNoteTitleChange(val value: String) : NoteEvents
     data class OnNoteBodyChange(val value: String) : NoteEvents
+    data class OnNoteCategoryChange(val value: String) : NoteEvents
     data object OnCreateNewNoteClick : NoteEvents
     data object OnCloseNoteSheetClick : NoteEvents
+    data object OnCategoryDialogClick : NoteEvents
+    data object OnCategoryDialogClose : NoteEvents
     data object OnSaveNote : NoteEvents
 }
 
@@ -77,6 +82,37 @@ class MainViewModel : ViewModel() {
                 viewModelScope.launch {
                     realm.write {
 
+                    }
+                }
+            }
+
+            NoteEvents.OnCategoryDialogClick -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isCategoryDialogOpen = true
+                        )
+                    }
+                }
+            }
+
+            NoteEvents.OnCategoryDialogClose -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isCategoryDialogOpen = false,
+                            noteCategory = ""
+                        )
+                    }
+                }
+            }
+
+            is NoteEvents.OnNoteCategoryChange -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            noteCategory = event.value
+                        )
                     }
                 }
             }
