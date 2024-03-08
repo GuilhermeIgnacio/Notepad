@@ -20,7 +20,6 @@ sealed interface NoteEvents {
     data class OnNoteBodyChange(val value: String) : NoteEvents
     data object OnCreateNewNoteClick : NoteEvents
     data object OnCloseNoteSheetClick : NoteEvents
-
     data object OnSaveNote : NoteEvents
 }
 

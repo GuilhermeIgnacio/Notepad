@@ -85,4 +85,7 @@ dependencies {
     implementation("io.realm.kotlin:library-sync:1.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0")
 
+    //Extended Icons
+    implementation("androidx.compose.material:material-icons-extended-android:1.6.3")
+
 }
