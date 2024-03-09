@@ -1,4 +1,4 @@
-package com.guilherme.notepad
+package com.guilherme.notepad.presentation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -28,8 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.guilherme.notepad.data.NoteEvents
+import com.guilherme.notepad.data.NoteState
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WriteNoteScreen(
     isVisible: Boolean,
@@ -71,7 +73,14 @@ fun WriteNoteScreen(
                                 contentDescription = "Set Category Button"
                             )
                         }
+                        TextButton(
+                            onClick = { onEvent(NoteEvents.OnSaveNote) },
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            Text(text = "Save Note")
+                        }
                     }
+
                 )
             },
         ) { paddingValues ->
@@ -81,7 +90,7 @@ fun WriteNoteScreen(
                     .padding(paddingValues)
             ) {
                 TextField(
-                    value = state.noteTitle,
+                    value = state.noteTitle ?: "",
                     onValueChange = { onEvent(NoteEvents.OnNoteTitleChange(value = it)) },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = {
@@ -104,7 +113,7 @@ fun WriteNoteScreen(
                 )
 
                 TextField(
-                    value = state.noteBody,
+                    value = state.noteBody ?: "",
                     onValueChange = { onEvent(NoteEvents.OnNoteBodyChange(value = it)) },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = {
@@ -158,8 +167,9 @@ fun NoteDialog(
         },
         title = { Text(text = "Set a Category") },
         text = {
+            /*TODO: Trocar a fonte de input desse textfield*/
             OutlinedTextField(
-                value = state.noteCategory,
+                value = state.noteCategory ?: "",
                 onValueChange = { onEvent(NoteEvents.OnNoteCategoryChange(it)) },
                 label = { Text(text = "Note Category") })
         }

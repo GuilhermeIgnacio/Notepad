@@ -1,4 +1,4 @@
-package com.guilherme.notepad
+package com.guilherme.notepad.presentation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.guilherme.notepad.data.MainViewModel
+import com.guilherme.notepad.data.NoteEvents
 
 @Composable
 fun NotepadApp(
@@ -28,6 +31,7 @@ fun NotepadApp(
 
     val onEvent = viewModel::onEvent
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val notes by viewModel.notes.collectAsState()
 
     Scaffold(
         floatingActionButton = {
@@ -57,6 +61,9 @@ fun NotepadApp(
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 24.sp
             )
+
+            NoteItem(notes = notes)
+
         }
 
 

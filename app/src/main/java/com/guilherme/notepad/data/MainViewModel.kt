@@ -1,20 +1,27 @@
-package com.guilherme.notepad
+package com.guilherme.notepad.data
 
+import android.provider.ContactsContract
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.guilherme.notepad.MyApp
+import com.guilherme.notepad.models.Note
+import io.realm.kotlin.UpdatePolicy
+import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class NoteState(
-    val noteTitle: String = "",
-    val noteBody: String = "",
-    val noteCategory: String = "",
-    val lastChange: String = "",
+    val noteTitle: String? = null,
+    val noteBody: String? = null,
+    val noteCategory: String? = null,
+    val lastChange: String? = null,
     val isNoteSheetOpen: Boolean = false,
     val isCategoryDialogOpen: Boolean = false
-
 )
 
 sealed interface NoteEvents {
@@ -34,6 +41,17 @@ class MainViewModel : ViewModel() {
     private val _state = MutableStateFlow(NoteState())
 
     val state = _state.asStateFlow()
+
+    val notes = realm.query<Note>()
+        .asFlow()
+        .map { results ->
+            results.list.toList()
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            emptyList()
+        )
 
 
     fun onEvent(event: NoteEvents) {
@@ -79,9 +97,18 @@ class MainViewModel : ViewModel() {
 
             NoteEvents.OnSaveNote -> {
 
+                val stateNoteTitle = _state.value.noteTitle
+                val stateNoteBody = _state.value.noteBody
+                val stateNoteCategory = _state.value.noteCategory
+
                 viewModelScope.launch {
                     realm.write {
-
+                        val newNote = Note().apply {
+                            noteTitle = stateNoteTitle
+                            noteBody = stateNoteBody
+                            noteCategory = stateNoteCategory
+                        }
+                        copyToRealm(newNote, updatePolicy = UpdatePolicy.ALL)
                     }
                 }
             }
@@ -101,7 +128,7 @@ class MainViewModel : ViewModel() {
                     _state.update {
                         it.copy(
                             isCategoryDialogOpen = false,
-                            noteCategory = ""
+                            noteCategory = null
                         )
                     }
                 }
@@ -118,5 +145,21 @@ class MainViewModel : ViewModel() {
             }
         }
     }
+
+//    private fun writeEntries(
+//        noteTitle: String?,
+//        noteBody: String?,
+//        noteCategory: String?,
+//        noteLastChange: String
+//    ) {
+//
+//        viewModelScope.launch {
+//            realm.write {
+//                Note().apply {
+//                    noteTitle =
+//                }
+//            }
+//        }
+//    }
 
 }
