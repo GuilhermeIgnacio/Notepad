@@ -32,22 +32,7 @@ import com.guilherme.notepad.models.Note
 fun NoteItem(
     notes: List<Note>
 ) {
-
-//    LazyColumn(
-//        modifier = Modifier.fillMaxWidth(),
-//        verticalArrangement = Arrangement.spacedBy(8.dp)
-//    ) {
-//        items(notes) { note ->
-//            Item(
-//                note = note,
-//                modifier = Modifier
-//                    .clickable { /*TODO*/ }
-//            )
-//        }
-//    }
-
     LazyVerticalStaggeredGrid(
-//        columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
         columns = StaggeredGridCells.Fixed(2),
         verticalItemSpacing = 16.dp,
         horizontalArrangement = Arrangement.spacedBy(24.dp),
@@ -88,7 +73,6 @@ fun Item(
             }
 
             Text(
-                /*TODO: Exibir categoria ao invés do body*/
                 text = note.noteBody ?: "",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
