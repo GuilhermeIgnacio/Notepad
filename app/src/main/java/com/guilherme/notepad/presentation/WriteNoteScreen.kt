@@ -1,29 +1,39 @@
 package com.guilherme.notepad.presentation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -53,11 +63,13 @@ fun WriteNoteScreen(
         )
     ) {
 
-
         Scaffold(
+
+            snackbarHost = { SnackbarHost(hostState = state.snackbar) },
+
             topBar = {
                 TopAppBar(
-                    title = { Text(text = "") },
+                    title = {},
                     navigationIcon = {
                         IconButton(onClick = { onEvent(NoteEvents.OnCloseNoteSheetClick) }) {
                             Icon(
@@ -74,7 +86,9 @@ fun WriteNoteScreen(
                             )
                         }
                         TextButton(
-                            onClick = { onEvent(NoteEvents.OnSaveNote) },
+                            onClick = {
+                                onEvent(NoteEvents.OnSaveNote)
+                            },
                             modifier = Modifier.padding(end = 8.dp)
                         ) {
                             Text(text = "Save Note")
@@ -150,13 +164,8 @@ fun NoteDialog(
         /* TODO: Talvez Definir um limite de caracteres para o campo de categoria */
         onDismissRequest = { onEvent(NoteEvents.OnCategoryDialogClose) },
         confirmButton = {
-            TextButton(onClick = { /*TODO*/ }) {
-                Text(text = "Confirm")
-            }
-        },
-        dismissButton = {
             TextButton(onClick = { onEvent(NoteEvents.OnCategoryDialogClose) }) {
-                Text(text = "Close")
+                Text(text = "Confirm")
             }
         },
         icon = {
@@ -171,7 +180,19 @@ fun NoteDialog(
             OutlinedTextField(
                 value = state.noteCategory ?: "",
                 onValueChange = { onEvent(NoteEvents.OnNoteCategoryChange(it)) },
-                label = { Text(text = "Note Category") })
+                label = { Text(text = "Note Category") },
+                trailingIcon = {
+                    if (!state.noteCategory.isNullOrEmpty()) {
+                        IconButton(onClick = { onEvent(NoteEvents.ClearCategoryField) }) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "Clear category text-field"
+                            )
+                        }
+                    }
+                },
+
+                )
         }
     )
 }

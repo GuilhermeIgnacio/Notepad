@@ -1,6 +1,7 @@
 package com.guilherme.notepad.data
 
 import android.provider.ContactsContract
+import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guilherme.notepad.MyApp
@@ -21,7 +22,8 @@ data class NoteState(
     val noteCategory: String? = null,
     val lastChange: String? = null,
     val isNoteSheetOpen: Boolean = false,
-    val isCategoryDialogOpen: Boolean = false
+    val isCategoryDialogOpen: Boolean = false,
+    val snackbar: SnackbarHostState = SnackbarHostState()
 )
 
 sealed interface NoteEvents {
@@ -32,6 +34,7 @@ sealed interface NoteEvents {
     data object OnCloseNoteSheetClick : NoteEvents
     data object OnCategoryDialogClick : NoteEvents
     data object OnCategoryDialogClose : NoteEvents
+    data object ClearCategoryField : NoteEvents
     data object OnSaveNote : NoteEvents
 }
 
@@ -102,14 +105,30 @@ class MainViewModel : ViewModel() {
                 val stateNoteCategory = _state.value.noteCategory
 
                 viewModelScope.launch {
-                    realm.write {
-                        val newNote = Note().apply {
-                            noteTitle = stateNoteTitle
-                            noteBody = stateNoteBody
-                            noteCategory = stateNoteCategory
+
+                    if (stateNoteTitle.isNullOrEmpty() && stateNoteBody.isNullOrEmpty()) {
+                        _state.value.snackbar.showSnackbar("Both Title and Body fields should not be left empty")
+                    } else {
+                        realm.write {
+                            val newNote = Note().apply {
+                                noteTitle = stateNoteTitle
+                                noteBody = stateNoteBody
+                                noteCategory = stateNoteCategory
+                            }
+                            copyToRealm(newNote, updatePolicy = UpdatePolicy.ALL)
                         }
-                        copyToRealm(newNote, updatePolicy = UpdatePolicy.ALL)
+
+                        _state.update {
+                            it.copy(
+                                noteTitle = null,
+                                noteBody = null,
+                                noteCategory = null,
+                                isNoteSheetOpen = false
+                            )
+                        }
                     }
+
+
                 }
             }
 
@@ -128,6 +147,15 @@ class MainViewModel : ViewModel() {
                     _state.update {
                         it.copy(
                             isCategoryDialogOpen = false,
+                        )
+                    }
+                }
+            }
+
+            NoteEvents.ClearCategoryField -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
                             noteCategory = null
                         )
                     }
@@ -143,23 +171,9 @@ class MainViewModel : ViewModel() {
                     }
                 }
             }
+
+
         }
     }
-
-//    private fun writeEntries(
-//        noteTitle: String?,
-//        noteBody: String?,
-//        noteCategory: String?,
-//        noteLastChange: String
-//    ) {
-//
-//        viewModelScope.launch {
-//            realm.write {
-//                Note().apply {
-//                    noteTitle =
-//                }
-//            }
-//        }
-//    }
 
 }
