@@ -119,29 +119,6 @@ fun WriteNoteScreen(
                     .fillMaxWidth()
                     .padding(paddingValues)
             ) {
-//                TextField(
-//                    value = state.noteTitle ?: "",
-//                    onValueChange = { onEvent(NoteEvents.OnNoteTitleChange(value = it)) },
-//                    modifier = Modifier.fillMaxWidth(),
-//                    placeholder = {
-//                        Text(text = "Title", fontWeight = FontWeight.Bold)
-//                    },
-//                    colors = TextFieldDefaults.colors(
-//                        disabledTextColor = Color.Transparent,
-//                        focusedIndicatorColor = Color.Transparent,
-//                        unfocusedIndicatorColor = Color.Transparent,
-//                        disabledIndicatorColor = Color.Transparent,
-//                        unfocusedContainerColor = Color.Transparent,
-//                        focusedContainerColor = Color.Transparent
-//                    ),
-//                    singleLine = true,
-//                )
-//
-//                Divider(
-//                    thickness = 1.dp,
-//                    color = Color.Gray
-//                )
-
                 TextField(
                     value = state.noteBody ?: "",
                     onValueChange = { onEvent(NoteEvents.OnNoteBodyChange(value = it)) },

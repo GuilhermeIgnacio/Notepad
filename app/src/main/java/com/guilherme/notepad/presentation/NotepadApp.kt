@@ -62,7 +62,7 @@ fun NotepadApp(
                 fontSize = 24.sp
             )
 
-            NoteItem(notes = notes)
+            NoteItem(notes = notes, onEvent = onEvent)
 
         }
 

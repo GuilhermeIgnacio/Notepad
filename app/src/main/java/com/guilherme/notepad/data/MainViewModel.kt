@@ -1,6 +1,7 @@
 package com.guilherme.notepad.data
 
-import android.provider.ContactsContract
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,14 +16,20 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.mongodb.kbson.ObjectId
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 data class NoteState(
     val noteTitle: String? = null,
     val noteBody: String? = null,
+    val noteId: ObjectId? = null,
     val noteCategory: String? = null,
     val lastChange: String? = null,
     val isNoteSheetOpen: Boolean = false,
     val isCategoryDialogOpen: Boolean = false,
+    val isEditMode: Boolean = false,
     val snackbar: SnackbarHostState = SnackbarHostState()
 )
 
@@ -30,6 +37,7 @@ sealed interface NoteEvents {
     data class OnNoteTitleChange(val value: String) : NoteEvents
     data class OnNoteBodyChange(val value: String) : NoteEvents
     data class OnNoteCategoryChange(val value: String) : NoteEvents
+    data class OnNoteClick(val note: Note) : NoteEvents
     data object OnCreateNewNoteClick : NoteEvents
     data object OnCloseNoteSheetClick : NoteEvents
     data object OnCategoryDialogClick : NoteEvents
@@ -57,6 +65,7 @@ class MainViewModel : ViewModel() {
         )
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: NoteEvents) {
         when (event) {
 
@@ -92,7 +101,12 @@ class MainViewModel : ViewModel() {
                 viewModelScope.launch {
                     _state.update {
                         it.copy(
-                            isNoteSheetOpen = false
+                            isNoteSheetOpen = false,
+                            noteId = null,
+                            noteTitle = null,
+                            noteBody = null,
+                            noteCategory = null,
+                            isEditMode = false
                         )
                     }
                 }
@@ -106,24 +120,36 @@ class MainViewModel : ViewModel() {
 
                 viewModelScope.launch {
 
+                    _state.update {
+                        it.copy(
+                            lastChange = LocalDateTime.now().toString()
+                        )
+                    }
+
                     if (stateNoteTitle.isNullOrEmpty() && stateNoteBody.isNullOrEmpty()) {
                         _state.value.snackbar.showSnackbar("Both Title and Body fields should not be left empty")
                     } else {
                         realm.write {
                             val newNote = Note().apply {
+                                if (_state.value.isEditMode) {
+                                    _id = state.value.noteId!!
+                                }
                                 noteTitle = stateNoteTitle
                                 noteBody = stateNoteBody
                                 noteCategory = stateNoteCategory
+                                noteLastChange = _state.value.lastChange
                             }
                             copyToRealm(newNote, updatePolicy = UpdatePolicy.ALL)
                         }
 
                         _state.update {
                             it.copy(
+                                noteId = null,
                                 noteTitle = null,
                                 noteBody = null,
                                 noteCategory = null,
-                                isNoteSheetOpen = false
+                                isNoteSheetOpen = false,
+                                isEditMode = false
                             )
                         }
                     }
@@ -172,7 +198,25 @@ class MainViewModel : ViewModel() {
                 }
             }
 
+            is NoteEvents.OnNoteClick -> {
 
+                val note = event.note
+
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isNoteSheetOpen = true,
+                            isEditMode = true,
+                            noteId = note._id,
+                            noteTitle = note.noteTitle,
+                            noteBody = note.noteBody,
+                            noteCategory = note.noteCategory,
+
+                        )
+                    }
+                }
+
+            }
         }
     }
 
