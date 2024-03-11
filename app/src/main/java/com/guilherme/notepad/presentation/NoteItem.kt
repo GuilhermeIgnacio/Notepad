@@ -2,7 +2,9 @@ package com.guilherme.notepad.presentation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
@@ -29,6 +31,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Date
 
+@OptIn(ExperimentalFoundationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NoteItem(
@@ -46,7 +49,10 @@ fun NoteItem(
         items(notes) { note ->
             Item(
                 note = note,
-                modifier = Modifier.clickable { onEvent(NoteEvents.OnNoteClick(note)) })
+                modifier = Modifier.combinedClickable(
+                    onClick = { onEvent(NoteEvents.OnNoteClick(note)) },
+                    onLongClick = { onEvent(NoteEvents.DeleteNote(note._id)) }
+                ))
         }
     }
 

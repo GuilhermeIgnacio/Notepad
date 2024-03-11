@@ -9,6 +9,7 @@ import com.guilherme.notepad.MyApp
 import com.guilherme.notepad.models.Note
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.types.annotations.PrimaryKey
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,6 +45,9 @@ sealed interface NoteEvents {
     data object OnCategoryDialogClose : NoteEvents
     data object ClearCategoryField : NoteEvents
     data object OnSaveNote : NoteEvents
+
+    data class DeleteNote(val noteId: ObjectId) : NoteEvents
+
 }
 
 class MainViewModel : ViewModel() {
@@ -212,7 +216,19 @@ class MainViewModel : ViewModel() {
                             noteBody = note.noteBody,
                             noteCategory = note.noteCategory,
 
-                        )
+                            )
+                    }
+                }
+
+            }
+
+            is NoteEvents.DeleteNote -> {
+
+                viewModelScope.launch {
+                    realm.write {
+                        val noteToDelete: Note =
+                            query<Note>("_id == $0", event.noteId).find().first()
+                        delete(noteToDelete)
                     }
                 }
 
