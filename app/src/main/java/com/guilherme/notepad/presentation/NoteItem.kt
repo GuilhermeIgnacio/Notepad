@@ -3,7 +3,6 @@ package com.guilherme.notepad.presentation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,10 +13,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -25,18 +31,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guilherme.notepad.R
 import com.guilherme.notepad.data.NoteEvents
+import com.guilherme.notepad.data.NoteState
 import com.guilherme.notepad.models.Note
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Date
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NoteItem(
     notes: List<Note>,
-    onEvent: (NoteEvents) -> Unit
+    onEvent: (NoteEvents) -> Unit,
+    state: NoteState
 ) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
@@ -51,11 +58,36 @@ fun NoteItem(
                 note = note,
                 modifier = Modifier.combinedClickable(
                     onClick = { onEvent(NoteEvents.OnNoteClick(note)) },
-                    onLongClick = { onEvent(NoteEvents.DeleteNote(note._id)) }
+                    onLongClick = { onEvent(NoteEvents.OpenDeleteDialog(note._id)) }
                 ))
+
+            if (state.isDeleteDialogOpen){
+                AlertDialog(
+                    onDismissRequest = { onEvent(NoteEvents.CloseDeleteDialog) },
+                    confirmButton = {
+                        TextButton(onClick = { onEvent(NoteEvents.DeleteNote) }) {
+                            Text(text = "Delete")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { onEvent(NoteEvents.CloseDeleteDialog) }) {
+                            Text(text = "Cancel")
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.DeleteForever,
+                            contentDescription = "Delete Icon",
+                            tint = Color.Red
+                        )
+                    },
+                    title = { Text(text = "Delete Note?") },
+                    text = { Text(text = "Are you sure you want do delete this item? This action cannot be undone") }
+                )
+            }
+
         }
     }
-
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

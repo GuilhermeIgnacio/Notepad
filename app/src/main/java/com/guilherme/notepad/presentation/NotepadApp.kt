@@ -1,5 +1,7 @@
 package com.guilherme.notepad.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.guilherme.notepad.data.MainViewModel
 import com.guilherme.notepad.data.NoteEvents
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NotepadApp(
     viewModel: MainViewModel = viewModel()
@@ -62,7 +65,7 @@ fun NotepadApp(
                 fontSize = 24.sp
             )
 
-            NoteItem(notes = notes, onEvent = onEvent)
+            NoteItem(notes = notes, onEvent = onEvent, state = state)
 
         }
 

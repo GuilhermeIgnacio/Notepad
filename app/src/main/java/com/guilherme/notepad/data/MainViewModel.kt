@@ -31,6 +31,7 @@ data class NoteState(
     val isNoteSheetOpen: Boolean = false,
     val isCategoryDialogOpen: Boolean = false,
     val isEditMode: Boolean = false,
+    val isDeleteDialogOpen: Boolean = false,
     val snackbar: SnackbarHostState = SnackbarHostState()
 )
 
@@ -45,8 +46,9 @@ sealed interface NoteEvents {
     data object OnCategoryDialogClose : NoteEvents
     data object ClearCategoryField : NoteEvents
     data object OnSaveNote : NoteEvents
-
-    data class DeleteNote(val noteId: ObjectId) : NoteEvents
+    data object DeleteNote : NoteEvents
+    data class OpenDeleteDialog(val noteId: ObjectId) : NoteEvents
+    data object CloseDeleteDialog: NoteEvents
 
 }
 
@@ -222,17 +224,45 @@ class MainViewModel : ViewModel() {
 
             }
 
-            is NoteEvents.DeleteNote -> {
+            NoteEvents.DeleteNote -> {
 
                 viewModelScope.launch {
                     realm.write {
                         val noteToDelete: Note =
-                            query<Note>("_id == $0", event.noteId).find().first()
+                            query<Note>("_id == $0", _state.value.noteId).find().first()
                         delete(noteToDelete)
                     }
+
+                    _state.update { it.copy(
+                        noteId = null,
+                        isDeleteDialogOpen = false
+                    ) }
+
                 }
 
             }
+
+            is NoteEvents.OpenDeleteDialog -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            noteId = event.noteId,
+                            isDeleteDialogOpen = true
+                        )
+                    }
+                }
+            }
+
+            NoteEvents.CloseDeleteDialog -> {
+                viewModelScope.launch {
+                    _state.update { it.copy(
+                        noteId = null,
+                        isDeleteDialogOpen = false
+                    ) }
+                }
+            }
+
+
         }
     }
 
