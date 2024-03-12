@@ -82,7 +82,7 @@ fun NoteItem(
                         )
                     },
                     title = { Text(text = "Delete Note?") },
-                    text = { Text(text = "Are you sure you want do delete this item? This action cannot be undone") }
+                    text = { Text(text = "Are you sure you want do delete this note? This action cannot be undone") }
                 )
             }
 
