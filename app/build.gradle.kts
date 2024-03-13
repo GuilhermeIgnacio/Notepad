@@ -88,4 +88,6 @@ dependencies {
     //Extended Icons
     implementation("androidx.compose.material:material-icons-extended-android:1.6.3")
 
+    //Rich Text Editor
+    implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc01")
 }

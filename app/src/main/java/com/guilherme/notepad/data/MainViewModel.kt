@@ -49,6 +49,7 @@ sealed interface NoteEvents {
     data object DeleteNote : NoteEvents
     data class OpenDeleteDialog(val noteId: ObjectId) : NoteEvents
     data object CloseDeleteDialog: NoteEvents
+    data class RichTextEditorSaveNote(val value: String): NoteEvents
 
 }
 
@@ -262,7 +263,9 @@ class MainViewModel : ViewModel() {
                 }
             }
 
-
+            is NoteEvents.RichTextEditorSaveNote -> {
+                println(event.value)
+            }
         }
     }
 
