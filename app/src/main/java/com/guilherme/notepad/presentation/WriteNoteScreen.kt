@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.FormatBold
 import androidx.compose.material.icons.filled.FormatItalic
 import androidx.compose.material.icons.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.FormatListNumbered
+import androidx.compose.material.icons.filled.FormatUnderlined
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.outlined.FormatItalic
 import androidx.compose.material.icons.rounded.FormatItalic
@@ -63,10 +64,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.guilherme.notepad.R
 import com.guilherme.notepad.data.NoteEvents
 import com.guilherme.notepad.data.NoteState
+import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorColors
@@ -85,6 +88,16 @@ fun WriteNoteScreen(
         mutableStateOf(false)
     }
 
+    var isLeft = rememberSaveable {
+        mutableStateOf(true)
+    }
+    var isCenter = rememberSaveable {
+        mutableStateOf(false)
+    }
+    var isRight = rememberSaveable {
+        mutableStateOf(false)
+    }
+
     AnimatedVisibility(
         visible = isVisible,
         enter = slideInVertically(
@@ -99,6 +112,8 @@ fun WriteNoteScreen(
     ) {
 
         val richTextState = rememberRichTextState()
+
+
 
         Scaffold(
 
@@ -158,11 +173,8 @@ fun WriteNoteScreen(
                         val currentSpanStyle = richTextState.currentSpanStyle
                         val isBold = currentSpanStyle.fontWeight == FontWeight.ExtraBold
                         val isItalic = currentSpanStyle.fontStyle == FontStyle.Italic
+                        val isUnderline = currentSpanStyle.textDecoration == TextDecoration.Underline
 
-                        val currentParagraph = richTextState.currentParagraphStyle
-                        val isLeft = currentParagraph.textAlign == TextAlign.Left
-                        val isCentered = currentParagraph.textAlign == TextAlign.Center
-                        val isRight = currentParagraph.textAlign == TextAlign.Right
 
 
                         IconToggleButton(checked = isBold, onCheckedChange = {
@@ -228,12 +240,16 @@ fun WriteNoteScreen(
                         }
 
                         IconToggleButton(
-                            checked = richTextState.isCodeSpan,
-                            onCheckedChange = { richTextState.toggleCodeSpan() }) {
+                            checked = isUnderline,
+                            onCheckedChange = { richTextState.toggleSpanStyle(
+                                SpanStyle(
+                                textDecoration = TextDecoration.Underline
+                            )
+                            ) }) {
                             Icon(
-                                imageVector = Icons.Default.Code,
+                                imageVector = Icons.Default.FormatUnderlined,
                                 contentDescription = "Toggle Code Text",
-                                modifier = if (richTextState.isCodeSpan) Modifier
+                                modifier = if (isUnderline) Modifier
                                     .background(
                                         Color(0x340091EA),
                                         CircleShape
@@ -243,18 +259,23 @@ fun WriteNoteScreen(
                         }
 
                         IconToggleButton(
-                            checked = isLeft,
+                            checked = isLeft.value,
                             onCheckedChange = {
                                 richTextState.toggleParagraphStyle(
                                     ParagraphStyle(
                                         textAlign = TextAlign.Left
                                     )
                                 )
+
+                                isLeft.value = true
+                                isCenter.value = false
+                                isRight.value = false
+
                             }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.FormatAlignLeft,
                                 contentDescription = "",
-                                modifier = if (isLeft) Modifier
+                                modifier = if (isLeft.value) Modifier
                                     .background(
                                         Color(0x340091EA),
                                         CircleShape
@@ -264,7 +285,7 @@ fun WriteNoteScreen(
                         }
 
                         IconToggleButton(
-                            checked = richTextState.currentParagraphStyle.textAlign == TextAlign.Center,
+                            checked = isCenter.value,
                             onCheckedChange = {
 
                                 richTextState.toggleParagraphStyle(
@@ -273,13 +294,15 @@ fun WriteNoteScreen(
                                     )
                                 )
 
-                                println(richTextState.currentParagraphStyle.textAlign)
+                                isLeft.value = false
+                                isCenter.value = true
+                                isRight.value = false
 
                             }) {
                             Icon(
                                 imageVector = Icons.Default.FormatAlignCenter,
                                 contentDescription = "",
-                                modifier = if (isCentered) Modifier
+                                modifier = if (isCenter.value) Modifier
                                     .background(
                                         Color(0x340091EA),
                                         CircleShape
@@ -289,18 +312,23 @@ fun WriteNoteScreen(
                         }
 
                         IconToggleButton(
-                            checked = isRight,
+                            checked = isRight.value,
                             onCheckedChange = {
                                 richTextState.toggleParagraphStyle(
                                     ParagraphStyle(
                                         textAlign = TextAlign.Right
                                     )
                                 )
+
+                                isLeft.value = false
+                                isCenter.value = false
+                                isRight.value = true
+
                             }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.FormatAlignRight,
                                 contentDescription = "",
-                                modifier = if (isRight) Modifier
+                                modifier = if (isRight.value) Modifier
                                     .background(
                                         Color(0x340091EA),
                                         CircleShape
