@@ -5,18 +5,33 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FormatAlignLeft
+import androidx.compose.material.icons.automirrored.filled.FormatAlignRight
+import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.FormatAlignCenter
+import androidx.compose.material.icons.filled.FormatAlignLeft
+import androidx.compose.material.icons.filled.FormatAlignRight
 import androidx.compose.material.icons.filled.FormatBold
 import androidx.compose.material.icons.filled.FormatItalic
+import androidx.compose.material.icons.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.FormatListNumbered
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.outlined.FormatItalic
+import androidx.compose.material.icons.rounded.FormatItalic
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,12 +52,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.guilherme.notepad.R
 import com.guilherme.notepad.data.NoteEvents
@@ -134,24 +154,158 @@ fun WriteNoteScreen(
             bottomBar = {
                 BottomAppBar(
                     actions = {
-                        IconButton(onClick = { }) {
-                            Icon(imageVector = Icons.Filled.FormatBold, contentDescription = "")
-                        }
-                        IconButton(onClick = {  }) {
-                            Icon(imageVector = Icons.Filled.FormatItalic, contentDescription = "")
-                        }
+
+                        val currentSpanStyle = richTextState.currentSpanStyle
+                        val isBold = currentSpanStyle.fontWeight == FontWeight.ExtraBold
+                        val isItalic = currentSpanStyle.fontStyle == FontStyle.Italic
+
+                        val currentParagraph = richTextState.currentParagraphStyle
+                        val isLeft = currentParagraph.textAlign == TextAlign.Left
+                        val isCentered = currentParagraph.textAlign == TextAlign.Center
+                        val isRight = currentParagraph.textAlign == TextAlign.Right
 
 
-                        IconToggleButton(checked = isOrderedListChecked.value, onCheckedChange = {
-
-                            /*TODO: Checar se modo estiver ativado, pode ser que usuário desative sem usar o botão*/
-
-                            richTextState.toggleOrderedList()
-                            isOrderedListChecked.value = !isOrderedListChecked.value
+                        IconToggleButton(checked = isBold, onCheckedChange = {
+                            richTextState.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.ExtraBold))
                         }) {
                             Icon(
+                                imageVector = Icons.Default.FormatBold,
+                                contentDescription = "Toggle Bold Text",
+                                modifier = if (isBold) Modifier
+                                    .background(
+                                        Color(0x340091EA),
+                                        CircleShape
+                                    )
+                                    .padding(4.dp) else Modifier.background(Color.Transparent)
+                            )
+                        }
+
+                        IconToggleButton(checked = isItalic, onCheckedChange = {
+                            richTextState.toggleSpanStyle(SpanStyle(fontStyle = FontStyle.Italic))
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.FormatItalic,
+                                contentDescription = "Toggle Italic Text",
+                                modifier = if (isItalic) Modifier
+                                    .background(
+                                        Color(0x340091EA),
+                                        CircleShape
+                                    )
+                                    .padding(4.dp)
+                                else Modifier.background(Color.Transparent)
+                            )
+                        }
+
+                        IconToggleButton(
+                            checked = richTextState.isUnorderedList,
+                            onCheckedChange = { richTextState.toggleUnorderedList() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.FormatListBulleted,
+                                contentDescription = "Toggle Unordered List",
+                                modifier = if (richTextState.isUnorderedList) Modifier
+                                    .background(
+                                        Color(0x340091EA),
+                                        CircleShape
+                                    )
+                                    .padding(4.dp) else Modifier.background(Color.Transparent)
+                            )
+
+                        }
+
+                        IconToggleButton(
+                            checked = richTextState.isOrderedList,
+                            onCheckedChange = { richTextState.toggleOrderedList() }) {
+                            Icon(
                                 imageVector = Icons.Default.FormatListNumbered,
-                                contentDescription = null
+                                contentDescription = "Toggle Numbered List",
+                                modifier = if (richTextState.isOrderedList) Modifier
+                                    .background(
+                                        Color(0x340091EA),
+                                        CircleShape
+                                    )
+                                    .padding(4.dp) else Modifier.background(Color.Transparent)
+                            )
+                        }
+
+                        IconToggleButton(
+                            checked = richTextState.isCodeSpan,
+                            onCheckedChange = { richTextState.toggleCodeSpan() }) {
+                            Icon(
+                                imageVector = Icons.Default.Code,
+                                contentDescription = "Toggle Code Text",
+                                modifier = if (richTextState.isCodeSpan) Modifier
+                                    .background(
+                                        Color(0x340091EA),
+                                        CircleShape
+                                    )
+                                    .padding(4.dp) else Modifier.background(Color.Transparent)
+                            )
+                        }
+
+                        IconToggleButton(
+                            checked = isLeft,
+                            onCheckedChange = {
+                                richTextState.toggleParagraphStyle(
+                                    ParagraphStyle(
+                                        textAlign = TextAlign.Left
+                                    )
+                                )
+                            }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.FormatAlignLeft,
+                                contentDescription = "",
+                                modifier = if (isLeft) Modifier
+                                    .background(
+                                        Color(0x340091EA),
+                                        CircleShape
+                                    )
+                                    .padding(6.dp) else Modifier.background(Color.Transparent)
+                            )
+                        }
+
+                        IconToggleButton(
+                            checked = richTextState.currentParagraphStyle.textAlign == TextAlign.Center,
+                            onCheckedChange = {
+
+                                richTextState.toggleParagraphStyle(
+                                    ParagraphStyle(
+                                        textAlign = TextAlign.Center
+                                    )
+                                )
+
+                                println(richTextState.currentParagraphStyle.textAlign)
+
+                            }) {
+                            Icon(
+                                imageVector = Icons.Default.FormatAlignCenter,
+                                contentDescription = "",
+                                modifier = if (isCentered) Modifier
+                                    .background(
+                                        Color(0x340091EA),
+                                        CircleShape
+                                    )
+                                    .padding(6.dp) else Modifier.background(Color.Transparent)
+                            )
+                        }
+
+                        IconToggleButton(
+                            checked = isRight,
+                            onCheckedChange = {
+                                richTextState.toggleParagraphStyle(
+                                    ParagraphStyle(
+                                        textAlign = TextAlign.Right
+                                    )
+                                )
+                            }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.FormatAlignRight,
+                                contentDescription = "",
+                                modifier = if (isRight) Modifier
+                                    .background(
+                                        Color(0x340091EA),
+                                        CircleShape
+                                    )
+                                    .padding(6.dp) else Modifier.background(Color.Transparent)
                             )
                         }
 
@@ -189,12 +343,18 @@ fun WriteNoteScreen(
 
                 RichTextEditor(
                     state = richTextState,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize(),
                     placeholder = {
                         Text(text = "Body")
                     },
                     textStyle = LocalTextStyle.current.copy(
-                        fontFamily = FontFamily(Font(googleFont = GoogleFont("Poppins"), fontProvider = provider))
+                        fontFamily = FontFamily(
+                            Font(
+                                googleFont = GoogleFont("Poppins"),
+                                fontProvider = provider
+                            )
+                        )
                     ),
                     colors = RichTextEditorDefaults.richTextEditorColors(
                         disabledTextColor = Color.Transparent,
