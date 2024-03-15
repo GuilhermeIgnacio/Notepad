@@ -3,7 +3,11 @@ package com.guilherme.notepad.data
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.guilherme.notepad.MyApp
 import com.guilherme.notepad.models.Note
@@ -32,7 +36,8 @@ data class NoteState(
     val isCategoryDialogOpen: Boolean = false,
     val isEditMode: Boolean = false,
     val isDeleteDialogOpen: Boolean = false,
-    val snackbar: SnackbarHostState = SnackbarHostState()
+    val snackbar: SnackbarHostState = SnackbarHostState(),
+    val isDialogColorPickerOpen: Boolean = false
 )
 
 sealed interface NoteEvents {
@@ -50,6 +55,7 @@ sealed interface NoteEvents {
     data class OpenDeleteDialog(val noteId: ObjectId) : NoteEvents
     data object CloseDeleteDialog: NoteEvents
     data class RichTextEditorSaveNote(val value: String): NoteEvents
+    data object OpenDialogColorPicker: NoteEvents
 
 }
 
@@ -265,6 +271,16 @@ class MainViewModel : ViewModel() {
 
             is NoteEvents.RichTextEditorSaveNote -> {
                 println(event.value)
+            }
+
+            NoteEvents.OpenDialogColorPicker -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isDialogColorPickerOpen = true
+                        )
+                    }
+                }
             }
         }
     }
