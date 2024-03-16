@@ -7,11 +7,13 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -60,7 +62,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -82,6 +86,7 @@ import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults
+import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -376,8 +381,19 @@ fun WriteNoteScreen(
                             )
                         }
 
-                        IconButton(onClick = { onEvent(NoteEvents.OpenBottomSheetColorPicker) }) {
-                            Icon(imageVector = Icons.Default.Colorize, contentDescription = "")
+                        IconToggleButton(
+                            checked = true,
+                            onCheckedChange = { onEvent(NoteEvents.OpenBottomSheetColorPicker) },
+                            modifier = Modifier
+                                .background(
+                                    richTextState.currentSpanStyle.color,
+                                    CircleShape
+                                )
+                                .border(1.dp, Color.Gray, CircleShape)
+                                .width(32.dp)
+                                .height(32.dp)
+                        ) {
+
                         }
 
                     }
@@ -580,7 +596,9 @@ fun DialogColorPicker(
 
                 }
             },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 64.dp, start = 8.dp, end = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 64.dp, start = 8.dp, end = 8.dp)
         )
     }
 
