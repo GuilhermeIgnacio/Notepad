@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,7 +36,6 @@ import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.FormatUnderlined
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,7 +60,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
@@ -80,6 +77,7 @@ import androidx.compose.ui.unit.dp
 import com.guilherme.notepad.R
 import com.guilherme.notepad.data.NoteEvents
 import com.guilherme.notepad.data.NoteState
+import com.guilherme.notepad.models.ChooseTextColorItems
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
@@ -439,42 +437,42 @@ fun WriteNoteScreen(
             if (state.isBottomSheetColorPickerOpen) {
 
                 val colors = listOf(
-                    ColorsItems(
+                    ChooseTextColorItems(
                         colorCode = Color.Red,
                         colorEvent = { richTextState.toggleSpanStyle(SpanStyle(color = Color.Red)) }
                     ),
-                    ColorsItems(
+                    ChooseTextColorItems(
                         colorCode = Color.Gray,
                         colorEvent = { richTextState.toggleSpanStyle(SpanStyle(color = Color.Gray)) }
                     ),
-                    ColorsItems(
+                    ChooseTextColorItems(
                         colorCode = Color.Blue,
                         colorEvent = { richTextState.toggleSpanStyle(SpanStyle(color = Color.Blue)) }
                     ),
-                    ColorsItems(
+                    ChooseTextColorItems(
                         colorCode = Color.Cyan,
                         colorEvent = { richTextState.toggleSpanStyle(SpanStyle(color = Color.Cyan)) }
                     ),
-                    ColorsItems(
+                    ChooseTextColorItems(
                         colorCode = Color.Black,
                         colorEvent = { richTextState.toggleSpanStyle(SpanStyle(color = Color.Black)) }
                     ),
-                    ColorsItems(
+                    ChooseTextColorItems(
                         colorCode = Color.DarkGray,
                         colorEvent = { richTextState.toggleSpanStyle(SpanStyle(color = Color.DarkGray)) }
                     ),
-                    ColorsItems(
+                    ChooseTextColorItems(
                         colorCode = Color.Green,
                         colorEvent = { richTextState.toggleSpanStyle(SpanStyle(color = Color.Green)) }
                     ),
-                    ColorsItems(
+                    ChooseTextColorItems(
                         colorCode = Color.LightGray,
                         colorEvent = { richTextState.toggleSpanStyle(SpanStyle(color = Color.LightGray)) }
                     ),
-                    ColorsItems(
+                    ChooseTextColorItems(
                         colorCode = Color.Magenta,
                         colorEvent = { richTextState.toggleSpanStyle(SpanStyle(color = Color.Magenta)) }
-                    ), ColorsItems(
+                    ), ChooseTextColorItems(
                         colorCode = Color.Yellow,
                         colorEvent = { richTextState.toggleSpanStyle(SpanStyle(color = Color.Yellow)) }
                     )
@@ -544,16 +542,11 @@ fun NoteDialog(
     )
 }
 
-data class ColorsItems(
-    val colorCode: Color = Color.White,
-    val colorEvent: (() -> Unit)? = null
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DialogColorPicker(
 
-    colors: List<ColorsItems>,
+    colors: List<ChooseTextColorItems>,
     richTextState: RichTextState,
     onEvent: (NoteEvents) -> Unit,
     sheetState: SheetState,
