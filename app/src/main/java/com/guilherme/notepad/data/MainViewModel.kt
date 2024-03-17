@@ -46,11 +46,11 @@ sealed interface NoteEvents {
     data object OnSaveNote : NoteEvents
     data object DeleteNote : NoteEvents
     data class OpenDeleteDialog(val noteId: ObjectId) : NoteEvents
-    data object CloseDeleteDialog: NoteEvents
-    data class RichTextEditorSaveNote(val value: String): NoteEvents
-    data object OpenBottomSheetColorPicker: NoteEvents
+    data object CloseDeleteDialog : NoteEvents
+    data class RichTextEditorSaveNote(val value: String, val verificationValue: String) : NoteEvents
+    data object OpenBottomSheetColorPicker : NoteEvents
 
-    data object CloseBottomSheetColorPicker: NoteEvents
+    data object CloseBottomSheetColorPicker : NoteEvents
 
 }
 
@@ -235,10 +235,12 @@ class MainViewModel : ViewModel() {
                         delete(noteToDelete)
                     }
 
-                    _state.update { it.copy(
-                        noteId = null,
-                        isDeleteDialogOpen = false
-                    ) }
+                    _state.update {
+                        it.copy(
+                            noteId = null,
+                            isDeleteDialogOpen = false
+                        )
+                    }
 
                 }
 
@@ -257,15 +259,59 @@ class MainViewModel : ViewModel() {
 
             NoteEvents.CloseDeleteDialog -> {
                 viewModelScope.launch {
-                    _state.update { it.copy(
-                        noteId = null,
-                        isDeleteDialogOpen = false
-                    ) }
+                    _state.update {
+                        it.copy(
+                            noteId = null,
+                            isDeleteDialogOpen = false
+                        )
+                    }
                 }
             }
 
             is NoteEvents.RichTextEditorSaveNote -> {
-                println(event.value)
+                println("Value ${event.value}")
+                println("Verification Value ${event.verificationValue}")
+
+                viewModelScope.launch {
+
+                    _state.update {
+                        it.copy(
+                            noteBody = event.value,
+                            lastChange = LocalDateTime.now().toString()
+                        )
+                    }
+
+                    if (_state.value.noteTitle.isNullOrEmpty() && event.verificationValue.isEmpty()){
+                        _state.value.snackbar.showSnackbar("Both Title and Body fields should not be left empty")
+                    } else {
+
+                        realm.write {
+                            val newNote = Note().apply {
+                                if (_state.value.isEditMode) {
+                                    _id = state.value.noteId!!
+                                }
+                                noteTitle = _state.value.noteTitle
+                                noteBody =  _state.value.noteBody
+                                noteCategory = _state.value.noteCategory
+                                noteLastChange = _state.value.lastChange
+                            }
+                            copyToRealm(newNote, updatePolicy = UpdatePolicy.ALL)
+                        }
+
+                        _state.update {
+                            it.copy(
+                                noteId = null,
+                                noteTitle = null,
+                                noteBody = null,
+                                noteCategory = null,
+                                isNoteSheetOpen = false,
+                                isEditMode = false
+                            )
+                        }
+
+                    }
+                }
+
             }
 
             NoteEvents.OpenBottomSheetColorPicker -> {

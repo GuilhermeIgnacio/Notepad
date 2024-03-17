@@ -58,9 +58,11 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
@@ -88,7 +90,7 @@ import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults
 import kotlin.math.absoluteValue
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WriteNoteScreen(
     isVisible: Boolean,
@@ -101,14 +103,21 @@ fun WriteNoteScreen(
         mutableStateOf(false)
     }
 
+
     var isLeft = rememberSaveable {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     var isCenter = rememberSaveable {
         mutableStateOf(false)
     }
     var isRight = rememberSaveable {
         mutableStateOf(false)
+    }
+
+    if (!isVisible) {
+        isLeft.value = false
+        isCenter.value = false
+        isRight.value = false
     }
 
     AnimatedVisibility(
@@ -169,7 +178,12 @@ fun WriteNoteScreen(
                         }
                         TextButton(
                             onClick = {
-                                onEvent(NoteEvents.RichTextEditorSaveNote(richTextState.toHtml()))
+                                onEvent(
+                                    NoteEvents.RichTextEditorSaveNote(
+                                        richTextState.toHtml(),
+                                        richTextState.toMarkdown()
+                                    )
+                                )
                             },
                             modifier = Modifier.padding(end = 8.dp)
                         ) {
@@ -182,7 +196,7 @@ fun WriteNoteScreen(
 
             bottomBar = {
                 BottomAppBar(
-                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                     actions = {
 
                         val currentSpanStyle = richTextState.currentSpanStyle
@@ -400,7 +414,6 @@ fun WriteNoteScreen(
                 )
             },
 
-
             ) { paddingValues ->
             Column(
                 modifier
@@ -416,7 +429,8 @@ fun WriteNoteScreen(
                 RichTextEditor(
                     state = richTextState,
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .onFocusChanged { richTextState.currentParagraphStyle.textAlign },
                     placeholder = {
                         Text(text = "Body")
                     },
@@ -446,6 +460,12 @@ fun WriteNoteScreen(
                         imeAction = ImeAction.Next,
                     )
                 )
+
+                if (state.noteBody != null) {
+                    LaunchedEffect(Unit) {
+                        richTextState.setHtml(state.noteBody)
+                    }
+                }
 
 
             }
