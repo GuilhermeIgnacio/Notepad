@@ -49,8 +49,8 @@ sealed interface NoteEvents {
     data object CloseDeleteDialog : NoteEvents
     data class RichTextEditorSaveNote(val value: String, val verificationValue: String) : NoteEvents
     data object OpenBottomSheetColorPicker : NoteEvents
-
     data object CloseBottomSheetColorPicker : NoteEvents
+    data class OnChipClick(val value: String?): NoteEvents
 
 }
 
@@ -329,6 +329,16 @@ class MainViewModel : ViewModel() {
                     _state.update {
                         it.copy(
                             isBottomSheetColorPickerOpen = false
+                        )
+                    }
+                }
+            }
+
+            is NoteEvents.OnChipClick -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            noteCategory = event.value
                         )
                     }
                 }

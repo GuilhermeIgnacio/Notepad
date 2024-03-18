@@ -115,6 +115,7 @@ fun WriteNoteScreen(
     }
 
     if (!isVisible) {
+        //Reseting Values
         isLeft.value = false
         isCenter.value = false
         isRight.value = false
