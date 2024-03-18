@@ -13,6 +13,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -88,6 +93,7 @@ fun NotepadApp(
     WriteNoteScreen(isVisible = state.isNoteSheetOpen, state = state, onEvent = onEvent)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteCategory(
     state: NoteState,
@@ -96,20 +102,24 @@ fun NoteCategory(
 ) {
 
     Row {
-        SuggestionChip(
-            modifier = Modifier.padding(end = 4.dp),
-            onClick = { onEvent(NoteEvents.OnChipClick(null)) },
+        FilterChip(
+            onClick = {
+                onEvent(NoteEvents.OnChipClick(null))
+                println(state.noteCategory)
+            },
+            selected = state.noteCategory == null,
             label = {
                 Text(text = "All Notes")
             },
-            colors = if (state.noteCategory == null) SuggestionChipDefaults.suggestionChipColors(
-                containerColor = Color(84, 110, 241),
-                labelColor = Color.White,
-
-                ) else SuggestionChipDefaults.suggestionChipColors(),
-            border = if (state.noteCategory == null) SuggestionChipDefaults.suggestionChipBorder(
+            colors = FilterChipDefaults.filterChipColors(
+                selectedContainerColor = Color(84, 110, 241),
+                selectedLabelColor = Color.White,
+                disabledLabelColor = Color.Black,
+                containerColor = Color(240, 240, 255, 255)
+            ),
+            border = FilterChipDefaults.filterChipBorder(
                 borderColor = Color.Transparent
-            ) else SuggestionChipDefaults.suggestionChipBorder()
+            )
         )
 
         LazyRow(
@@ -118,12 +128,25 @@ fun NoteCategory(
 
 
             items(notes) { note ->
-
-                SuggestionChip(
-                    onClick = { onEvent(NoteEvents.OnChipClick(note.noteCategory)) },
+                FilterChip(
+                    onClick = {
+                        onEvent(NoteEvents.OnChipClick(note.noteCategory))
+                        println(state.noteCategory)
+                    },
+                    selected = state.noteCategory == note.noteCategory,
                     label = {
                         Text(text = note.noteCategory ?: "")
-                    })
+                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Color(84, 110, 241),
+                        selectedLabelColor = Color.White,
+                        disabledLabelColor = Color.Black,
+                        containerColor = Color(240, 240, 255, 255)
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        borderColor = Color.Transparent
+                    )
+                )
 
             }
 
