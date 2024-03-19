@@ -292,7 +292,7 @@ class MainViewModel : ViewModel() {
                                 }
                                 noteTitle = _state.value.noteTitle
                                 noteBody =  _state.value.noteBody
-                                noteCategory = _state.value.noteCategory
+                                noteCategory = if (_state.value.noteCategory.isNullOrBlank()) null else _state.value.noteCategory
                                 noteLastChange = _state.value.lastChange
                             }
                             copyToRealm(newNote, updatePolicy = UpdatePolicy.ALL)

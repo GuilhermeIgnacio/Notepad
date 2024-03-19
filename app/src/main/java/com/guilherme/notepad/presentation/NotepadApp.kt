@@ -128,25 +128,28 @@ fun NoteCategory(
 
 
             items(notes) { note ->
-                FilterChip(
-                    onClick = {
-                        onEvent(NoteEvents.OnChipClick(note.noteCategory))
-                        println(state.noteCategory)
-                    },
-                    selected = state.noteCategory == note.noteCategory,
-                    label = {
-                        Text(text = note.noteCategory ?: "")
-                    },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(84, 110, 241),
-                        selectedLabelColor = Color.White,
-                        disabledLabelColor = Color.Black,
-                        containerColor = Color(240, 240, 255, 255)
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        borderColor = Color.Transparent
+
+                if (note.noteCategory != null) {
+                    FilterChip(
+                        onClick = {
+                            onEvent(NoteEvents.OnChipClick(note.noteCategory))
+                            println(state.noteCategory)
+                        },
+                        selected = state.noteCategory == note.noteCategory,
+                        label = {
+                            Text(text = note.noteCategory ?: "")
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Color(84, 110, 241),
+                            selectedLabelColor = Color.White,
+                            disabledLabelColor = Color.Black,
+                            containerColor = Color(240, 240, 255, 255)
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            borderColor = Color.Transparent
+                        )
                     )
-                )
+                }
 
             }
 
