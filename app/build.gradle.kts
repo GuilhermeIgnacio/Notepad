@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("io.realm.kotlin")
+    id("com.google.dagger.hilt.android")
+    kotlin("kapt")
 }
 
 android {
@@ -90,4 +92,9 @@ dependencies {
 
     //Rich Text Editor
     implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc01")
+
+    //Hilt
+    implementation ("com.google.dagger:hilt-android:2.51")
+    kapt ("com.google.dagger:hilt-compiler:2.51")
+
 }

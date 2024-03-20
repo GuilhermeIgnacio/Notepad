@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guilherme.notepad.MyApp
 import com.guilherme.notepad.models.Note
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,8 +19,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 import java.time.LocalDateTime
+import javax.inject.Inject
 
 data class NoteState(
+    val notes: List<Note> = emptyList(),
+    val filteredNotes: List<Note> = emptyList(),
     val noteTitle: String? = null,
     val noteBody: String? = null,
     val noteId: ObjectId? = null,
@@ -30,7 +34,8 @@ data class NoteState(
     val isEditMode: Boolean = false,
     val isDeleteDialogOpen: Boolean = false,
     val snackbar: SnackbarHostState = SnackbarHostState(),
-    val isBottomSheetColorPickerOpen: Boolean = false
+    val isBottomSheetColorPickerOpen: Boolean = false,
+    val selectedChip: String? = null
 )
 
 sealed interface NoteEvents {
@@ -50,28 +55,31 @@ sealed interface NoteEvents {
     data class RichTextEditorSaveNote(val value: String, val verificationValue: String) : NoteEvents
     data object OpenBottomSheetColorPicker : NoteEvents
     data object CloseBottomSheetColorPicker : NoteEvents
-    data class OnChipClick(val value: String?): NoteEvents
+    data class OnChipClick(val value: String?) : NoteEvents
 
 }
 
-class MainViewModel : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val repository: MongoRepository
+) : ViewModel() {
 
-    private val realm = MyApp.realm
     private val _state = MutableStateFlow(NoteState())
 
     val state = _state.asStateFlow()
 
-    val notes = realm.query<Note>()
-        .asFlow()
-        .map { results ->
-            results.list.toList()
+    init {
+        viewModelScope.launch {
+            repository.getData().collect { results ->
+                _state.update {
+                    it.copy(
+                        notes = results
+                    )
+                }
+            }
         }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(),
-            emptyList()
-        )
 
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: NoteEvents) {
@@ -126,44 +134,6 @@ class MainViewModel : ViewModel() {
                 val stateNoteBody = _state.value.noteBody
                 val stateNoteCategory = _state.value.noteCategory
 
-                viewModelScope.launch {
-
-                    _state.update {
-                        it.copy(
-                            lastChange = LocalDateTime.now().toString()
-                        )
-                    }
-
-                    if (stateNoteTitle.isNullOrEmpty() && stateNoteBody.isNullOrEmpty()) {
-                        _state.value.snackbar.showSnackbar("Both Title and Body fields should not be left empty")
-                    } else {
-                        realm.write {
-                            val newNote = Note().apply {
-                                if (_state.value.isEditMode) {
-                                    _id = state.value.noteId!!
-                                }
-                                noteTitle = stateNoteTitle
-                                noteBody = stateNoteBody
-                                noteCategory = stateNoteCategory
-                                noteLastChange = _state.value.lastChange
-                            }
-                            copyToRealm(newNote, updatePolicy = UpdatePolicy.ALL)
-                        }
-
-                        _state.update {
-                            it.copy(
-                                noteId = null,
-                                noteTitle = null,
-                                noteBody = null,
-                                noteCategory = null,
-                                isNoteSheetOpen = false,
-                                isEditMode = false
-                            )
-                        }
-                    }
-
-
-                }
             }
 
             NoteEvents.OnCategoryDialogClick -> {
@@ -227,21 +197,14 @@ class MainViewModel : ViewModel() {
             }
 
             NoteEvents.DeleteNote -> {
-
                 viewModelScope.launch {
-                    realm.write {
-                        val noteToDelete: Note =
-                            query<Note>("_id == $0", _state.value.noteId).find().first()
-                        delete(noteToDelete)
-                    }
-
+                    _state.value.noteId?.let { repository.deleteNote(it) }
                     _state.update {
                         it.copy(
                             noteId = null,
                             isDeleteDialogOpen = false
                         )
                     }
-
                 }
 
             }
@@ -281,22 +244,19 @@ class MainViewModel : ViewModel() {
                         )
                     }
 
-                    if (_state.value.noteTitle.isNullOrEmpty() && event.verificationValue.isEmpty()){
+                    if (_state.value.noteTitle.isNullOrEmpty() && event.verificationValue.isEmpty()) {
                         _state.value.snackbar.showSnackbar("Both Title and Body fields should not be left empty")
                     } else {
 
-                        realm.write {
-                            val newNote = Note().apply {
-                                if (_state.value.isEditMode) {
-                                    _id = state.value.noteId!!
-                                }
-                                noteTitle = _state.value.noteTitle
-                                noteBody =  _state.value.noteBody
-                                noteCategory = if (_state.value.noteCategory.isNullOrBlank()) null else _state.value.noteCategory
-                                noteLastChange = _state.value.lastChange
+                        repository.insertNote(note = Note().apply {
+                            if (_state.value.isEditMode) {
+                                _id = _state.value.noteId!!
                             }
-                            copyToRealm(newNote, updatePolicy = UpdatePolicy.ALL)
-                        }
+                            noteTitle = _state.value.noteTitle
+                            noteBody = _state.value.noteBody
+                            noteCategory = _state.value.noteCategory
+                            noteLastChange = _state.value.lastChange
+                        })
 
                         _state.update {
                             it.copy(
@@ -335,13 +295,19 @@ class MainViewModel : ViewModel() {
             }
 
             is NoteEvents.OnChipClick -> {
+
                 viewModelScope.launch {
-                    _state.update {
-                        it.copy(
-                            noteCategory = event.value
-                        )
+                    repository.filterData(event.value).collect { results ->
+                        _state.update {
+                            it.copy(
+                                selectedChip = event.value,
+                                filteredNotes = results
+                            )
+                        }
                     }
+
                 }
+
             }
         }
     }

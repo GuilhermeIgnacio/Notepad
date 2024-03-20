@@ -17,7 +17,9 @@ import com.guilherme.notepad.data.MainViewModel
 import com.guilherme.notepad.presentation.NoteDialog
 import com.guilherme.notepad.presentation.NotepadApp
 import com.guilherme.notepad.ui.theme.NotepadTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {

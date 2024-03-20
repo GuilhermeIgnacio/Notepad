@@ -49,7 +49,8 @@ fun NotepadApp(
 
     val onEvent = viewModel::onEvent
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val notes by viewModel.notes.collectAsState()
+    val notes = state.notes
+    val filteredNotes = state.filteredNotes
 
     Scaffold(
         floatingActionButton = {
@@ -83,7 +84,12 @@ fun NotepadApp(
             //Todo: Se não tiver nenhuma categoria criada esconder esse componente
             NoteCategory(state = state, notes = notes, onEvent = onEvent)
 
-            NoteItem(notes = notes, onEvent = onEvent, state = state)
+            if (state.selectedChip != null) {
+                NoteItem(notes = filteredNotes, onEvent = onEvent, state = state)
+            } else {
+                NoteItem(notes = notes, onEvent = onEvent, state = state)
+
+            }
 
         }
 
@@ -107,7 +113,7 @@ fun NoteCategory(
                 onEvent(NoteEvents.OnChipClick(null))
                 println(state.noteCategory)
             },
-            selected = state.noteCategory == null,
+            selected = state.selectedChip == null,
             label = {
                 Text(text = "All Notes")
             },
@@ -135,7 +141,7 @@ fun NoteCategory(
                             onEvent(NoteEvents.OnChipClick(note.noteCategory))
                             println(state.noteCategory)
                         },
-                        selected = state.noteCategory == note.noteCategory,
+                        selected = state.selectedChip == note.noteCategory,
                         label = {
                             Text(text = note.noteCategory ?: "")
                         },
