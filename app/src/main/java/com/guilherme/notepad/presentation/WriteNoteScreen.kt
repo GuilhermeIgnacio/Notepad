@@ -84,6 +84,8 @@ import com.guilherme.notepad.R
 import com.guilherme.notepad.data.NoteEvents
 import com.guilherme.notepad.data.NoteState
 import com.guilherme.notepad.models.ChooseTextColorItems
+import com.guilherme.notepad.ui.theme.fontFamily
+import com.guilherme.notepad.ui.theme.provider
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
@@ -197,7 +199,9 @@ fun WriteNoteScreen(
 
             bottomBar = {
                 BottomAppBar(
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
                     actions = {
 
                         val currentSpanStyle = richTextState.currentSpanStyle
@@ -421,11 +425,6 @@ fun WriteNoteScreen(
                     .fillMaxWidth()
                     .padding(paddingValues)
             ) {
-                val provider = GoogleFont.Provider(
-                    providerAuthority = "com.google.android.gms.fonts",
-                    providerPackage = "com.google.android.gms",
-                    certificates = R.array.com_google_android_gms_fonts_certs
-                )
 
                 RichTextEditor(
                     state = richTextState,
@@ -544,6 +543,7 @@ fun NoteDialog(
 ) {
     AlertDialog(
         /* TODO: Talvez Definir um limite de caracteres para o campo de categoria */
+        /* TODO: Remover espaços inuteis da valor de category */
         onDismissRequest = { onEvent(NoteEvents.OnCategoryDialogClose) },
         confirmButton = {
             TextButton(onClick = { onEvent(NoteEvents.OnCategoryDialogClose) }) {
@@ -558,7 +558,8 @@ fun NoteDialog(
         },
         title = { Text(text = "Set a Category") },
         text = {
-            /*TODO: Category -> Trocar a fonte de input desse textfield (Esta usando a fonte padrão do Compose)*/
+
+            /* TODO: adicionar as categorias existentes para escolher */
             OutlinedTextField(
                 value = state.noteCategory ?: "",
                 onValueChange = { onEvent(NoteEvents.OnNoteCategoryChange(it)) },
@@ -571,8 +572,20 @@ fun NoteDialog(
                                 contentDescription = "Clear category text-field"
                             )
                         }
+                    } else {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            
+                        }
                     }
                 },
+                textStyle = LocalTextStyle.current.copy(
+                    fontFamily = FontFamily(
+                        Font(
+                            googleFont = GoogleFont("Poppins"),
+                            fontProvider = provider
+                        )
+                    )
+                )
 
                 )
         }
@@ -591,7 +604,7 @@ fun DialogColorPicker(
 
     ModalBottomSheet(
         onDismissRequest = { onEvent(NoteEvents.CloseBottomSheetColorPicker) },
-        sheetState = sheetState, /*Todo: passar esse sheetstate para o viewmodel*/
+        sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.secondary
     ) {
         LazyRow(

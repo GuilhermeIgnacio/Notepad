@@ -50,7 +50,7 @@ fun NotepadApp(
     val onEvent = viewModel::onEvent
     val state by viewModel.state.collectAsStateWithLifecycle()
     val notes = state.notes
-    val filteredNotes = state.filteredNotes
+    val categories = state.categories
 
     Scaffold(
         floatingActionButton = {
@@ -81,15 +81,8 @@ fun NotepadApp(
                 fontSize = 24.sp
             )
 
-            //Todo: Se não tiver nenhuma categoria criada esconder esse componente
-            NoteCategory(state = state, notes = notes, onEvent = onEvent)
-
-            if (state.selectedChip != null) {
-                NoteItem(notes = filteredNotes, onEvent = onEvent, state = state)
-            } else {
-                NoteItem(notes = notes, onEvent = onEvent, state = state)
-
-            }
+            NoteCategory(state = state, notes = categories, onEvent = onEvent)
+            NoteItem(notes = notes, onEvent = onEvent, state = state)
 
         }
 
@@ -103,7 +96,7 @@ fun NotepadApp(
 @Composable
 fun NoteCategory(
     state: NoteState,
-    notes: List<Note>,
+    notes: MutableList<String?>,
     onEvent: (NoteEvents) -> Unit
 ) {
 
@@ -133,29 +126,29 @@ fun NoteCategory(
         ) {
 
 
-            items(notes) { note ->
 
-                if (note.noteCategory != null) {
-                    FilterChip(
-                        onClick = {
-                            onEvent(NoteEvents.OnChipClick(note.noteCategory))
-                            println(state.noteCategory)
-                        },
-                        selected = state.selectedChip == note.noteCategory,
-                        label = {
-                            Text(text = note.noteCategory ?: "")
-                        },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Color(84, 110, 241),
-                            selectedLabelColor = Color.White,
-                            disabledLabelColor = Color.Black,
-                            containerColor = Color(240, 240, 255, 255)
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            borderColor = Color.Transparent
-                        )
+            items(notes.distinct()) { note ->
+
+                FilterChip(
+                    onClick = {
+                        onEvent(NoteEvents.OnChipClick(note))
+                        println(state.noteCategory)
+                    },
+                    selected = state.selectedChip == note,
+                    label = {
+                        Text(text = note ?: "")
+                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Color(84, 110, 241),
+                        selectedLabelColor = Color.White,
+                        disabledLabelColor = Color.Black,
+                        containerColor = Color(240, 240, 255, 255)
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        borderColor = Color.Transparent
                     )
-                }
+                )
+
 
             }
 

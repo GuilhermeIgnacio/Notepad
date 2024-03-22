@@ -5,16 +5,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.guilherme.notepad.MyApp
 import com.guilherme.notepad.models.Note
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.realm.kotlin.UpdatePolicy
-import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
@@ -23,7 +17,7 @@ import javax.inject.Inject
 
 data class NoteState(
     val notes: List<Note> = emptyList(),
-    val filteredNotes: List<Note> = emptyList(),
+    val categories: MutableList<String?> = mutableListOf(),
     val noteTitle: String? = null,
     val noteBody: String? = null,
     val noteId: ObjectId? = null,
@@ -70,7 +64,7 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.getData().collect { results ->
+            repository.getData(_state.value.selectedChip).collect { results ->
                 _state.update {
                     it.copy(
                         notes = results
@@ -79,6 +73,16 @@ class MainViewModel @Inject constructor(
             }
         }
 
+    }
+
+    init {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    categories = repository.getCategories()
+                )
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -265,7 +269,9 @@ class MainViewModel @Inject constructor(
                                 noteBody = null,
                                 noteCategory = null,
                                 isNoteSheetOpen = false,
-                                isEditMode = false
+                                isEditMode = false,
+                                categories = repository.getCategories(),
+                                selectedChip = null
                             )
                         }
 
@@ -297,14 +303,16 @@ class MainViewModel @Inject constructor(
             is NoteEvents.OnChipClick -> {
 
                 viewModelScope.launch {
-                    repository.filterData(event.value).collect { results ->
+
+                    repository.getData(event.value).collect { results ->
                         _state.update {
                             it.copy(
                                 selectedChip = event.value,
-                                filteredNotes = results
+                                notes = results
                             )
                         }
                     }
+
 
                 }
 
