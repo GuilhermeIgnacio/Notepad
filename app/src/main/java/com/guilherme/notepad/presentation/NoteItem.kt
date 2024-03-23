@@ -5,28 +5,38 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guilherme.notepad.R
@@ -65,7 +75,7 @@ fun NoteItem(
                     onLongClick = { onEvent(NoteEvents.OpenDeleteDialog(note._id)) }
                 ))
 
-            if (state.isDeleteDialogOpen){
+            if (state.isDeleteDialogOpen) {
                 AlertDialog(
                     onDismissRequest = { onEvent(NoteEvents.CloseDeleteDialog) },
                     confirmButton = {
@@ -101,14 +111,19 @@ fun Item(
     modifier: Modifier = Modifier
 ) {
 
-    OutlinedCard(
+    Card(
         modifier = modifier
             .width(180.dp)
-            .defaultMinSize(minHeight = 180.dp)
+            .defaultMinSize(minHeight = 180.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
 
         Column(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize()
         ) {
 
             if (note.noteTitle != null) {
@@ -116,17 +131,23 @@ fun Item(
                     text = note.noteTitle ?: "",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 1
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
             val richTextState = rememberRichTextState()
             richTextState.setHtml(note.noteBody ?: "")
-            RichText(
-                state = richTextState,
-                fontSize = 16.sp
-            )
 
+            if (richTextState.toMarkdown().isNotEmpty()) {
+                RichText(
+                    state = richTextState,
+                    modifier = if (note.noteTitle != null) Modifier.padding(top = 16.dp) else Modifier,
+                    fontSize = 16.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
 
 
             val date = LocalDateTime.parse(
@@ -143,7 +164,9 @@ fun Item(
                 text = stringResource(R.string.last_edit, dateFormatter ?: ""),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Light,
-                modifier = Modifier.padding(top = 32.dp),
+                modifier = Modifier
+                    .padding(top = 32.dp)
+                    .align(Alignment.End),
                 fontStyle = FontStyle.Italic
             )
 
