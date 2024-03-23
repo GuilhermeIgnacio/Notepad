@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -28,6 +30,8 @@ import androidx.compose.material.icons.automirrored.filled.FormatAlignLeft
 import androidx.compose.material.icons.automirrored.filled.FormatAlignRight
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Colorize
@@ -40,6 +44,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -98,7 +104,8 @@ fun WriteNoteScreen(
     isVisible: Boolean,
     modifier: Modifier = Modifier,
     state: NoteState,
-    onEvent: (NoteEvents) -> Unit
+    onEvent: (NoteEvents) -> Unit,
+    categories: MutableList<String?>
 ) {
 
     var isOrderedListChecked = rememberSaveable {
@@ -527,7 +534,7 @@ fun WriteNoteScreen(
         }
 
         if (state.isCategoryDialogOpen) {
-            NoteDialog(state = state, onEvent = onEvent)
+            NoteDialog(state = state, onEvent = onEvent, categories = categories)
         }
 
 
@@ -539,7 +546,8 @@ fun WriteNoteScreen(
 @Composable
 fun NoteDialog(
     state: NoteState,
-    onEvent: (NoteEvents) -> Unit
+    onEvent: (NoteEvents) -> Unit,
+    categories: MutableList<String?>
 ) {
     AlertDialog(
         /* TODO: Talvez Definir um limite de caracteres para o campo de categoria */
@@ -573,9 +581,26 @@ fun NoteDialog(
                             )
                         }
                     } else {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            
+
+                        if (categories.isNotEmpty()) {
+                            IconButton(onClick = { onEvent(NoteEvents.OpenDropDownMenu) }) {
+
+                                if (state.isDropDownMenuOpen) {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropUp,
+                                        contentDescription = "Open drop down menu"
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = "Open drop down menu"
+                                    )
+                                }
+
+                            }
                         }
+
+
                     }
                 },
                 textStyle = LocalTextStyle.current.copy(
@@ -587,9 +612,50 @@ fun NoteDialog(
                     )
                 )
 
-                )
+            )
+
+            CategoryDropDownMenu(state = state, onEvent = onEvent, categories = categories)
+
         }
     )
+}
+
+data class NoteDropDownItem(
+    var category: String? = null
+)
+
+
+@Composable
+fun CategoryDropDownMenu(
+    state: NoteState,
+    onEvent: (NoteEvents) -> Unit,
+    categories: MutableList<String?>
+) {
+
+    val lorem = NoteDropDownItem()
+
+    categories.forEach { values ->
+        lorem.apply {
+            category = values
+        }
+    }
+
+    println(lorem)
+
+    DropdownMenu(
+        expanded = state.isDropDownMenuOpen,
+        onDismissRequest = { onEvent(NoteEvents.CloseDropDownMenu) }) {
+
+        categories.distinct().forEach { values ->
+
+            DropdownMenuItem(
+                text = { Text(text = values ?: "") },
+                onClick = { onEvent(NoteEvents.OnNoteCategoryChange(values ?: "")) })
+
+        }
+
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

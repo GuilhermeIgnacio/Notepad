@@ -89,7 +89,7 @@ fun NotepadApp(
 
     }
 
-    WriteNoteScreen(isVisible = state.isNoteSheetOpen, state = state, onEvent = onEvent)
+    WriteNoteScreen(isVisible = state.isNoteSheetOpen, state = state, onEvent = onEvent, categories = categories)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

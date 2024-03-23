@@ -29,7 +29,8 @@ data class NoteState(
     val isDeleteDialogOpen: Boolean = false,
     val snackbar: SnackbarHostState = SnackbarHostState(),
     val isBottomSheetColorPickerOpen: Boolean = false,
-    val selectedChip: String? = null
+    val selectedChip: String? = null,
+    val isDropDownMenuOpen: Boolean = false
 )
 
 sealed interface NoteEvents {
@@ -50,6 +51,8 @@ sealed interface NoteEvents {
     data object OpenBottomSheetColorPicker : NoteEvents
     data object CloseBottomSheetColorPicker : NoteEvents
     data class OnChipClick(val value: String?) : NoteEvents
+    data object OpenDropDownMenu: NoteEvents
+    data object CloseDropDownMenu: NoteEvents
 
 }
 
@@ -174,7 +177,8 @@ class MainViewModel @Inject constructor(
                 viewModelScope.launch {
                     _state.update {
                         it.copy(
-                            noteCategory = event.value
+                            noteCategory = event.value,
+                            isDropDownMenuOpen = false
                         )
                     }
                 }
@@ -206,7 +210,8 @@ class MainViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             noteId = null,
-                            isDeleteDialogOpen = false
+                            isDeleteDialogOpen = false,
+                            categories = repository.getCategories()
                         )
                     }
                 }
@@ -316,6 +321,20 @@ class MainViewModel @Inject constructor(
 
                 }
 
+            }
+
+            NoteEvents.OpenDropDownMenu -> {
+                _state.update { it.copy(
+                    isDropDownMenuOpen = true
+                ) }
+            }
+
+            NoteEvents.CloseDropDownMenu -> {
+                viewModelScope.launch {
+                    _state.update { it.copy(
+                        isDropDownMenuOpen = false
+                    ) }
+                }
             }
         }
     }
