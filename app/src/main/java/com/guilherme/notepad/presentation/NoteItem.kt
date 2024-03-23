@@ -80,23 +80,23 @@ fun NoteItem(
                     onDismissRequest = { onEvent(NoteEvents.CloseDeleteDialog) },
                     confirmButton = {
                         TextButton(onClick = { onEvent(NoteEvents.DeleteNote) }) {
-                            Text(text = "Delete")
+                            Text(text = stringResource(R.string.delete_alertdialog))
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { onEvent(NoteEvents.CloseDeleteDialog) }) {
-                            Text(text = "Cancel")
+                            Text(text = stringResource(R.string.cancel_alertdialog))
                         }
                     },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.DeleteForever,
-                            contentDescription = "Delete Icon",
+                            contentDescription = stringResource(R.string.delete_icon_description),
                             tint = Color.Red
                         )
                     },
-                    title = { Text(text = "Delete Note?") },
-                    text = { Text(text = "Are you sure you want do delete this note? This action cannot be undone") }
+                    title = { Text(text = stringResource(R.string.delete_note_alertdialog_title)) },
+                    text = { Text(text = stringResource(R.string.delete_item_alertdialog)) }
                 )
             }
 

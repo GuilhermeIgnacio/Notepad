@@ -2,60 +2,16 @@ package com.guilherme.notepad.data
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.guilherme.notepad.R
 import com.guilherme.notepad.models.Note
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.mongodb.kbson.ObjectId
 import java.time.LocalDateTime
 import javax.inject.Inject
-
-data class NoteState(
-    val notes: List<Note> = emptyList(),
-    val categories: MutableList<String> = mutableListOf(),
-    val noteTitle: String? = null,
-    val noteBody: String? = null,
-    val noteId: ObjectId? = null,
-    val noteCategory: String? = null,
-    val lastChange: String? = null,
-    val isNoteSheetOpen: Boolean = false,
-    val isCategoryDialogOpen: Boolean = false,
-    val isEditMode: Boolean = false,
-    val isDeleteDialogOpen: Boolean = false,
-    val snackbar: SnackbarHostState = SnackbarHostState(),
-    val isBottomSheetColorPickerOpen: Boolean = false,
-    val selectedChip: String? = null,
-    val isDropDownMenuOpen: Boolean = false
-)
-
-sealed interface NoteEvents {
-    data class OnNoteTitleChange(val value: String) : NoteEvents
-    data class OnNoteBodyChange(val value: String) : NoteEvents
-    data class OnNoteCategoryChange(val value: String) : NoteEvents
-    data class OnNoteClick(val note: Note) : NoteEvents
-    data object OnCreateNewNoteClick : NoteEvents
-    data object OnCloseNoteSheetClick : NoteEvents
-    data object OnCategoryDialogClick : NoteEvents
-    data object OnCategoryDialogClose : NoteEvents
-    data object ClearCategoryField : NoteEvents
-    data object OnSaveNote : NoteEvents
-    data object DeleteNote : NoteEvents
-    data class OpenDeleteDialog(val noteId: ObjectId) : NoteEvents
-    data object CloseDeleteDialog : NoteEvents
-    data class RichTextEditorSaveNote(val value: String, val verificationValue: String) : NoteEvents
-    data object OpenBottomSheetColorPicker : NoteEvents
-    data object CloseBottomSheetColorPicker : NoteEvents
-    data class OnChipClick(val value: String?) : NoteEvents
-    data object OpenDropDownMenu: NoteEvents
-    data object CloseDropDownMenu: NoteEvents
-
-}
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -134,14 +90,6 @@ class MainViewModel @Inject constructor(
                         )
                     }
                 }
-            }
-
-            NoteEvents.OnSaveNote -> {
-
-                val stateNoteTitle = _state.value.noteTitle
-                val stateNoteBody = _state.value.noteBody
-                val stateNoteCategory = _state.value.noteCategory
-
             }
 
             NoteEvents.OnCategoryDialogClick -> {

@@ -107,24 +107,17 @@ fun WriteNoteScreen(
     onEvent: (NoteEvents) -> Unit,
     categories: MutableList<String>
 ) {
-
-    var isOrderedListChecked = rememberSaveable {
+    val isLeft = rememberSaveable {
         mutableStateOf(false)
     }
-
-
-    var isLeft = rememberSaveable {
+    val isCenter = rememberSaveable {
         mutableStateOf(false)
     }
-    var isCenter = rememberSaveable {
-        mutableStateOf(false)
-    }
-    var isRight = rememberSaveable {
+    val isRight = rememberSaveable {
         mutableStateOf(false)
     }
 
     if (!isVisible) {
-        //Reseting Values
         isLeft.value = false
         isCenter.value = false
         isRight.value = false
@@ -159,7 +152,7 @@ fun WriteNoteScreen(
                             value = state.noteTitle ?: "",
                             onValueChange = { onEvent(NoteEvents.OnNoteTitleChange(it)) },
                             modifier = Modifier.fillMaxWidth(),
-                            placeholder = { Text(text = "Title", fontWeight = FontWeight.Bold) },
+                            placeholder = { Text(text = stringResource(R.string.title), fontWeight = FontWeight.Bold) },
                             colors = TextFieldDefaults.colors(
                                 disabledTextColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent,
@@ -175,7 +168,7 @@ fun WriteNoteScreen(
                         IconButton(onClick = { onEvent(NoteEvents.OnCloseNoteSheetClick) }) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = "Return Button"
+                                contentDescription = stringResource(R.string.return_button_icon_description)
                             )
                         }
                     },
@@ -183,7 +176,7 @@ fun WriteNoteScreen(
                         IconButton(onClick = { onEvent(NoteEvents.OnCategoryDialogClick) }) {
                             Icon(
                                 imageVector = Icons.Filled.Bookmark,
-                                contentDescription = "Set Category Button"
+                                contentDescription = stringResource(R.string.set_category_button_icon_description)
                             )
                         }
                         TextButton(
@@ -197,7 +190,7 @@ fun WriteNoteScreen(
                             },
                             modifier = Modifier.padding(end = 8.dp)
                         ) {
-                            Text(text = "Save Note")
+                            Text(text = stringResource(R.string.save_note_button))
                         }
                     }
 
@@ -226,7 +219,7 @@ fun WriteNoteScreen(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.FormatBold,
-                                contentDescription = "Toggle Bold Text",
+                                contentDescription = stringResource(R.string.toggle_bold_text_buttonicon_description),
                                 modifier = if (isBold) Modifier
                                     .background(
                                         Color(0x340091EA),
@@ -241,7 +234,7 @@ fun WriteNoteScreen(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.FormatItalic,
-                                contentDescription = "Toggle Italic Text",
+                                contentDescription = stringResource(R.string.toggle_italic_text_buttonicon_description),
                                 modifier = if (isItalic) Modifier
                                     .background(
                                         Color(0x340091EA),
@@ -263,7 +256,7 @@ fun WriteNoteScreen(
                             }) {
                             Icon(
                                 imageVector = Icons.Default.FormatUnderlined,
-                                contentDescription = "Toggle Code Text",
+                                contentDescription = stringResource(R.string.toggle_code_text_icon_description),
                                 modifier = if (isUnderline) Modifier
                                     .background(
                                         Color(0x340091EA),
@@ -282,7 +275,7 @@ fun WriteNoteScreen(
                         }) {
                             Icon(
                                 painterResource(id = R.drawable.strikethrough),
-                                contentDescription = "Toggle Crossed Out Text",
+                                contentDescription = stringResource(R.string.toggle_crossed_out_text_icon_description),
                                 modifier = if (isCrossedOut) Modifier
                                     .background(
                                         Color(0x340091EA),
@@ -302,7 +295,7 @@ fun WriteNoteScreen(
                             onCheckedChange = { richTextState.toggleUnorderedList() }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.FormatListBulleted,
-                                contentDescription = "Toggle Unordered List",
+                                contentDescription = stringResource(R.string.toggle_unordered_list_icon_description),
                                 modifier = if (richTextState.isUnorderedList) Modifier
                                     .background(
                                         Color(0x340091EA),
@@ -318,7 +311,7 @@ fun WriteNoteScreen(
                             onCheckedChange = { richTextState.toggleOrderedList() }) {
                             Icon(
                                 imageVector = Icons.Default.FormatListNumbered,
-                                contentDescription = "Toggle Numbered List",
+                                contentDescription = stringResource(R.string.toggle_numbered_list_icon_description),
                                 modifier = if (richTextState.isOrderedList) Modifier
                                     .background(
                                         Color(0x340091EA),
@@ -344,7 +337,7 @@ fun WriteNoteScreen(
                             }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.FormatAlignLeft,
-                                contentDescription = "",
+                                contentDescription = stringResource(R.string.text_align_left_icon_desc),
                                 modifier = if (isLeft.value) Modifier
                                     .background(
                                         Color(0x340091EA),
@@ -371,7 +364,7 @@ fun WriteNoteScreen(
                             }) {
                             Icon(
                                 imageVector = Icons.Default.FormatAlignCenter,
-                                contentDescription = "",
+                                contentDescription = stringResource(R.string.text_align_center_icon_description),
                                 modifier = if (isCenter.value) Modifier
                                     .background(
                                         Color(0x340091EA),
@@ -397,7 +390,7 @@ fun WriteNoteScreen(
                             }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.FormatAlignRight,
-                                contentDescription = "",
+                                contentDescription = stringResource(R.string.text_align_right_icon_description),
                                 modifier = if (isRight.value) Modifier
                                     .background(
                                         Color(0x340091EA),
@@ -439,7 +432,7 @@ fun WriteNoteScreen(
                         .fillMaxSize()
                         .onFocusChanged { richTextState.currentParagraphStyle.textAlign },
                     placeholder = {
-                        Text(text = "Body")
+                        Text(text = stringResource(R.string.textfield_body))
                     },
                     textStyle = LocalTextStyle.current.copy(
                         textDecoration = TextDecoration.None,
@@ -458,8 +451,6 @@ fun WriteNoteScreen(
                         containerColor = Color.Transparent
                     ),
                     keyboardOptions = KeyboardOptions(
-
-                        //Todo: Resolver a questão do texto riscado
 
                         capitalization = KeyboardCapitalization.None,
                         autoCorrect = true,
@@ -550,34 +541,32 @@ fun NoteDialog(
     categories: MutableList<String>
 ) {
     AlertDialog(
-        /* TODO: Talvez Definir um limite de caracteres para o campo de categoria */
-        /* TODO: Remover espaços inuteis da valor de category */
+
+
         onDismissRequest = { onEvent(NoteEvents.OnCategoryDialogClose) },
         confirmButton = {
             TextButton(onClick = { onEvent(NoteEvents.OnCategoryDialogClose) }) {
-                Text(text = "Confirm")
+                Text(text = stringResource(R.string.note_confirm_button))
             }
         },
         icon = {
             Icon(
                 imageVector = Icons.Filled.Bookmark,
-                contentDescription = "Bookmark icon for dialog"
+                contentDescription = stringResource(R.string.bookmark_icon_for_dialog)
             )
         },
-        title = { Text(text = "Set a Category") },
+        title = { Text(text = stringResource(R.string.note_dialog_set_a_category)) },
         text = {
-
-            /* TODO: adicionar as categorias existentes para escolher */
             OutlinedTextField(
                 value = state.noteCategory ?: "",
                 onValueChange = { onEvent(NoteEvents.OnNoteCategoryChange(it)) },
-                label = { Text(text = "Note Category") },
+                label = { Text(text = stringResource(R.string.note_category_dialog_label)) },
                 trailingIcon = {
                     if (!state.noteCategory.isNullOrEmpty()) {
                         IconButton(onClick = { onEvent(NoteEvents.ClearCategoryField) }) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
-                                contentDescription = "Clear category text-field"
+                                contentDescription = stringResource(R.string.clear_category_text_field_icon_description)
                             )
                         }
                     } else {
@@ -588,12 +577,12 @@ fun NoteDialog(
                                 if (state.isDropDownMenuOpen) {
                                     Icon(
                                         imageVector = Icons.Default.ArrowDropUp,
-                                        contentDescription = "Open drop down menu"
+                                        contentDescription = stringResource(R.string.open_drop_down_menu_icon_descripiton)
                                     )
                                 } else {
                                     Icon(
                                         imageVector = Icons.Default.ArrowDropDown,
-                                        contentDescription = "Open drop down menu"
+                                        contentDescription = stringResource(R.string.open_drop_down_menu_icon_description)
                                     )
                                 }
 
@@ -647,7 +636,7 @@ fun CategoryDropDownMenu(
         categories.distinct().forEach { values ->
 
             DropdownMenuItem(
-                text = { Text(text = values ?: "") },
+                text = { Text(text = values) },
                 onClick = { onEvent(NoteEvents.OnNoteCategoryChange(values)) })
 
         }
