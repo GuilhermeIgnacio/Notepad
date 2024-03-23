@@ -18,12 +18,12 @@ class MongoRepositoryImpl(val realm: Realm) : MongoRepository {
         }
     }
 
-    override fun getCategories(): MutableList<String?> {
-        val categories: MutableList<String?> = mutableListOf()
+    override fun getCategories(): MutableList<String> {
+        val categories: MutableList<String> = mutableListOf()
 
         realm.query<Note>().find()
             .forEach { note ->
-                categories.add(note.noteCategory)
+                note.noteCategory?.let { categories.add(it) }
             }
 
         return categories

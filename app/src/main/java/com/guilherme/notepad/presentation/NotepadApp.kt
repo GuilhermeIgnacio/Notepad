@@ -96,7 +96,7 @@ fun NotepadApp(
 @Composable
 fun NoteCategory(
     state: NoteState,
-    notes: MutableList<String?>,
+    notes: MutableList<String>,
     onEvent: (NoteEvents) -> Unit
 ) {
 
@@ -136,7 +136,7 @@ fun NoteCategory(
                     },
                     selected = state.selectedChip == note,
                     label = {
-                        Text(text = note ?: "")
+                        Text(text = note)
                     },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = Color(84, 110, 241),

@@ -105,7 +105,7 @@ fun WriteNoteScreen(
     modifier: Modifier = Modifier,
     state: NoteState,
     onEvent: (NoteEvents) -> Unit,
-    categories: MutableList<String?>
+    categories: MutableList<String>
 ) {
 
     var isOrderedListChecked = rememberSaveable {
@@ -547,7 +547,7 @@ fun WriteNoteScreen(
 fun NoteDialog(
     state: NoteState,
     onEvent: (NoteEvents) -> Unit,
-    categories: MutableList<String?>
+    categories: MutableList<String>
 ) {
     AlertDialog(
         /* TODO: Talvez Definir um limite de caracteres para o campo de categoria */
@@ -629,7 +629,7 @@ data class NoteDropDownItem(
 fun CategoryDropDownMenu(
     state: NoteState,
     onEvent: (NoteEvents) -> Unit,
-    categories: MutableList<String?>
+    categories: MutableList<String>
 ) {
 
     val lorem = NoteDropDownItem()
@@ -640,8 +640,6 @@ fun CategoryDropDownMenu(
         }
     }
 
-    println(lorem)
-
     DropdownMenu(
         expanded = state.isDropDownMenuOpen,
         onDismissRequest = { onEvent(NoteEvents.CloseDropDownMenu) }) {
@@ -650,7 +648,7 @@ fun CategoryDropDownMenu(
 
             DropdownMenuItem(
                 text = { Text(text = values ?: "") },
-                onClick = { onEvent(NoteEvents.OnNoteCategoryChange(values ?: "")) })
+                onClick = { onEvent(NoteEvents.OnNoteCategoryChange(values)) })
 
         }
 

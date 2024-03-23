@@ -2,4 +2,5 @@
     <string name="app_name">Notepad</string>
     <string name="last_edit">Last edit: %s</string>
     <string name="open_bottom_sheet_to_change_text_color">Open Bottom Sheet to change text color</string>
+    <string name="both_title_and_body_fields_should_not_be_left_empty">Both Title and Body fields should not be left empty</string>
 </resources>

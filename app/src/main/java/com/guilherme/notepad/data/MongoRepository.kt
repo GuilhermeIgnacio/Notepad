@@ -7,7 +7,7 @@ import org.mongodb.kbson.ObjectId
 interface MongoRepository {
 
     fun getData(selectedChip: String?): Flow<List<Note>>
-    fun getCategories(): MutableList<String?>
+    fun getCategories(): MutableList<String>
     suspend fun insertNote(note: Note)
     suspend fun updateNote(note: Note)
     suspend fun deleteNote(noteId: ObjectId)

@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.guilherme.notepad.R
 import com.guilherme.notepad.models.Note
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,7 @@ import javax.inject.Inject
 
 data class NoteState(
     val notes: List<Note> = emptyList(),
-    val categories: MutableList<String?> = mutableListOf(),
+    val categories: MutableList<String> = mutableListOf(),
     val noteTitle: String? = null,
     val noteBody: String? = null,
     val noteId: ObjectId? = null,
@@ -241,8 +242,6 @@ class MainViewModel @Inject constructor(
             }
 
             is NoteEvents.RichTextEditorSaveNote -> {
-                println("Value ${event.value}")
-                println("Verification Value ${event.verificationValue}")
 
                 viewModelScope.launch {
 
