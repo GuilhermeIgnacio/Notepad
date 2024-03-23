@@ -2,6 +2,12 @@ package com.guilherme.notepad.presentation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -82,14 +88,34 @@ fun NotepadApp(
             )
 
             NoteCategory(state = state, notes = categories, onEvent = onEvent)
-            NoteItem(notes = notes, onEvent = onEvent, state = state)
+
+            AnimatedContent(
+                targetState = state.selectedChip,
+                label = "null",
+                transitionSpec = {
+                    slideInHorizontally(
+                        initialOffsetX = { -it }
+                    ) togetherWith slideOutHorizontally(
+                        targetOffsetX = { it }
+                    )
+                }
+            ) {
+                if (it == state.selectedChip) {
+                    NoteItem(notes = notes, onEvent = onEvent, state = state)
+                }
+            }
 
         }
 
 
     }
 
-    WriteNoteScreen(isVisible = state.isNoteSheetOpen, state = state, onEvent = onEvent, categories = categories)
+    WriteNoteScreen(
+        isVisible = state.isNoteSheetOpen,
+        state = state,
+        onEvent = onEvent,
+        categories = categories
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -124,7 +150,6 @@ fun NoteCategory(
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-
 
 
             items(notes.distinct()) { note ->
