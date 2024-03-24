@@ -2,4 +2,33 @@
 <resources>
     <string name="app_name">Notepad</string>
     <string name="last_edit">Última Modificação: %s</string>
+    <string name="both_title_and_body_fields_should_not_be_left_empty">Ambos Título e Corpo do texto não podem ser deixados vazios.</string>
+    <string name="note_confirm_button">Confirmar</string>
+    <string name="open_bottom_sheet_to_change_text_color">Abrir página para trocar a cor do texto</string>
+    <string name="bookmark_icon_for_dialog">Ícone Categoria</string>
+    <string name="note_dialog_set_a_category">Definir Categoria</string>
+    <string name="clear_category_text_field_icon_description">Limpar campo de texto</string>
+    <string name="open_drop_down_menu_icon_descripiton">Abrir menu suspenso</string>
+    <string name="open_drop_down_menu_icon_description">Abrir  menu suspenso</string>
+    <string name="title">Título</string>
+    <string name="return_button_icon_description">Botão Voltar</string>
+    <string name="set_category_button_icon_description">Botão Definir Categoria</string>
+    <string name="save_note_button">Salvar Nota</string>
+    <string name="toggle_bold_text_buttonicon_description">Alternar Texto Negrito</string>
+    <string name="toggle_italic_text_buttonicon_description">Alternar Texto Itálico</string>
+    <string name="toggle_crossed_out_text_icon_description">Alternar Texto Riscado</string>
+    <string name="toggle_unordered_list_icon_description">Alternar Lista Não Ordenada</string>
+    <string name="toggle_numbered_list_icon_description">Alternar Lista Ordenada</string>
+    <string name="text_align_left_icon_desc">Alinhar texto à esquerda</string>
+    <string name="text_align_center_icon_description">Alinhar texto ao centro</string>
+    <string name="text_align_right_icon_description">Alinhar texto à direita</string>
+    <string name="textfield_body">Corpo</string>
+    <string name="note_category_dialog_label">Categoria da Nota</string>
+    <string name="all_notes_chip_filter">Todas as Notas</string>
+    <string name="delete_alertdialog">Deletar</string>
+    <string name="cancel_alertdialog">Cancelar</string>
+    <string name="delete_icon_description">Ícone de Deletar</string>
+    <string name="delete_note_alertdialog_title">Excluir Nota?</string>
+    <string name="delete_item_alertdialog">Tem certeza que deseja excluir este item? Essa ação é irreversível.</string>
+    <string name="create_new_note_icon_description">Escrever Nova Nota</string>
 </resources>

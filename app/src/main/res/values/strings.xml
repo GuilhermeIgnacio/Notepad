@@ -15,7 +15,7 @@
     <string name="save_note_button">Save Note</string>
     <string name="toggle_bold_text_buttonicon_description">Toggle Bold Text</string>
     <string name="toggle_italic_text_buttonicon_description">Toggle Italic Text</string>
-    <string name="toggle_code_text_icon_description">Toggle Code Text</string>
+    <string name="toggle_code_text_icon_description" translatable="false">Toggle Code Text</string>
     <string name="toggle_crossed_out_text_icon_description">Toggle Crossed Out Text</string>
     <string name="toggle_unordered_list_icon_description">Toggle Unordered List</string>
     <string name="toggle_numbered_list_icon_description">Toggle Numbered List</string>
