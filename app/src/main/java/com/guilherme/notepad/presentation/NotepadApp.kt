@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -65,12 +66,11 @@ fun NotepadApp(
             FloatingActionButton(
                 onClick = { onEvent(NoteEvents.OnCreateNewNoteClick) },
                 shape = CircleShape,
-                modifier = Modifier.padding(16.dp),
                 containerColor = Color(82, 111, 242)
             ) {
                 Icon(
                     imageVector = Icons.Filled.Create,
-                    contentDescription = "Create New Note",
+                    contentDescription = stringResource(R.string.create_new_note_icon_description),
                     tint = Color.White
                 )
             }
@@ -83,7 +83,7 @@ fun NotepadApp(
         ) {
             Text(
                 text = "Notepad",
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 24.sp

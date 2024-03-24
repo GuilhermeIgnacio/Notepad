@@ -30,4 +30,5 @@
     <string name="delete_icon_description">Delete Icon</string>
     <string name="delete_note_alertdialog_title">Delete Note?</string>
     <string name="delete_item_alertdialog">Are you sure you want do delete this note? This action cannot be undone</string>
+    <string name="create_new_note_icon_description">Create New Note</string>
 </resources>
