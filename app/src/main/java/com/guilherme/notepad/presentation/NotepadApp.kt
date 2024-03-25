@@ -39,7 +39,6 @@ import com.guilherme.notepad.data.MainViewModel
 import com.guilherme.notepad.data.NoteEvents
 import com.guilherme.notepad.data.NoteState
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NotepadApp(
     viewModel: MainViewModel = viewModel()

@@ -45,7 +45,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: NoteEvents) {
         when (event) {
 

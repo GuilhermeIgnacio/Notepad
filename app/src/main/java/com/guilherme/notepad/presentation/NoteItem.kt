@@ -44,7 +44,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 @OptIn(ExperimentalFoundationApi::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NoteItem(
     notes: List<Note>,
@@ -96,7 +95,6 @@ fun NoteItem(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Item(
     note: Note,

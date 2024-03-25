@@ -10,10 +10,10 @@ import org.mongodb.kbson.ObjectId
 
 class MongoRepositoryImpl(val realm: Realm) : MongoRepository {
     override fun getData(selectedChip: String?): Flow<List<Note>> {
-        if (selectedChip == null) {
-            return realm.query<Note>().asFlow().map { it.list }
+        return if (selectedChip == null) {
+            realm.query<Note>().asFlow().map { it.list }
         } else {
-            return realm.query<Note>("noteCategory == $0", selectedChip).asFlow().map { it.list }
+            realm.query<Note>("noteCategory == $0", selectedChip).asFlow().map { it.list }
         }
     }
 

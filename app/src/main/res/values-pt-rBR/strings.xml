@@ -2,9 +2,7 @@
 <resources>
     <string name="app_name">Notepad</string>
     <string name="last_edit">Última Modificação: %s</string>
-    <string name="both_title_and_body_fields_should_not_be_left_empty">Ambos Título e Corpo do texto não podem ser deixados vazios.</string>
     <string name="note_confirm_button">Confirmar</string>
-    <string name="open_bottom_sheet_to_change_text_color">Abrir página para trocar a cor do texto</string>
     <string name="bookmark_icon_for_dialog">Ícone Categoria</string>
     <string name="note_dialog_set_a_category">Definir Categoria</string>
     <string name="clear_category_text_field_icon_description">Limpar campo de texto</string>
