@@ -3,8 +3,6 @@ package com.guilherme.notepad.models
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId
-import java.time.LocalDateTime
-import java.util.Date
 
 class Note : RealmObject {
 
