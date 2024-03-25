@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -105,7 +106,7 @@ fun Item(
     Card(
         modifier = modifier
             .width(180.dp)
-            .defaultMinSize(minHeight = 180.dp),
+            .height(180.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
@@ -117,15 +118,15 @@ fun Item(
                 .fillMaxSize()
         ) {
 
-            if (note.noteTitle != null) {
-                Text(
-                    text = note.noteTitle ?: "",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+
+            Text(
+                text = note.noteTitle ?: "",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
 
             val richTextState = rememberRichTextState()
             richTextState.setHtml(note.noteBody ?: "")
@@ -133,7 +134,6 @@ fun Item(
             if (richTextState.toMarkdown().isNotEmpty()) {
                 RichText(
                     state = richTextState,
-                    modifier = if (note.noteTitle != null) Modifier.padding(top = 16.dp) else Modifier,
                     fontSize = 16.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
