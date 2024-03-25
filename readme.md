@@ -11,8 +11,8 @@ The Notepad App is a simple yet powerful Android application designed to help us
 
 ## Screenshots
 <div align="center">
-  <img src="screenshots/MainScreen.png" width="500"/>
-  <img src="screenshots/EditNoteScreen.png" width="500"/>
+  <img src="screenshots/MainScreen.png" width="300"/>
+  <img src="screenshots/EditNoteScreen.png" width="300"/>
 </div>
 
 ## Installation
