@@ -144,7 +144,7 @@ fun Item(
                     state = richTextState,
                     modifier = if (note.noteTitle != null) Modifier.padding(top = 16.dp) else Modifier,
                     fontSize = 16.sp,
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
