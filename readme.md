@@ -1,3 +1,4 @@
+---
 
 # Notepad App 🗒️
 
@@ -9,9 +10,10 @@ The Notepad App is a simple yet powerful Android application designed to help us
 - **Organize Notes:** Organize your notes into categories or folders for better management.
 
 ## Screenshots
-![Main Screen](screenshots/MainScreen.png)
-![Create Note Screen](screenshots/CreateNoteScreen.png)
-![Edit Note Screen](screenshots/EditNoteScreen.png)
+<div style="text-align:center">
+  <img src="screenshots/MainScreen.png" width="500"/>
+  <img src="screenshots/EditNoteScreen.png" width="500"/>
+</div>
 
 ## Installation
 1. Clone the repository: `git clone https://github.com/GuilhermeIgnacio/Notepad`
@@ -34,3 +36,5 @@ Contributions are welcome! If you'd like to contribute to this project, please f
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
+
+---
