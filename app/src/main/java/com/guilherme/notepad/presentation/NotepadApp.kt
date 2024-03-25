@@ -134,7 +134,9 @@ fun NoteCategory(
                 containerColor = Color(240, 240, 255, 255)
             ),
             border = FilterChipDefaults.filterChipBorder(
-                borderColor = Color.Transparent
+                borderColor = Color.Transparent,
+                selected = state.selectedChip == null,
+                enabled = true
             )
         )
 
@@ -161,7 +163,9 @@ fun NoteCategory(
                         containerColor = Color(240, 240, 255, 255)
                     ),
                     border = FilterChipDefaults.filterChipBorder(
-                        borderColor = Color.Transparent
+                        borderColor = Color.Transparent,
+                        enabled = true,
+                        selected = state.selectedChip == note
                     )
                 )
 
