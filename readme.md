@@ -23,7 +23,7 @@ The Notepad App is a simple yet powerful Android application designed to help us
 
 ## Requirements
 - Android Studio
-- Android SDK version 21 or higher
+- Android SDK version 26 or higher
 
 ## Contributing
 Contributions are welcome! If you'd like to contribute to this project, please follow these steps:
